@@ -107,13 +107,20 @@ class YouTubePlaylistScraper:
                 await context.close()
                 await browser.close()
     
-    def create_csv(self, videos: list[dict]):
+    def create_csv(self, videos: list[dict], playlist_items: list[dict]):
         """Create a properly formatted CSV file from video data."""
         print(f"📝 Creating CSV file...")
         
         rows = [
-            ["video_id", "title", "video_description", "video_length", "video_published_datetime", "video_likes", "video_views", "number_comments"]
+            ["video_id", "channel_name", "title", "video_description", "video_length", "video_published_datetime", "video_likes", "video_views", "number_comments"]
         ]
+        
+        # Create a mapping of video_id to channel name
+        video_channel_map = {}
+        for item in playlist_items:
+            video_id = item["contentDetails"]["videoId"]
+            channel_name = item["snippet"].get("videoOwnerChannelTitle", item["snippet"]["channelTitle"])
+            video_channel_map[video_id] = channel_name
         
         for video in videos:
             snippet = video.get("snippet", {})
@@ -122,6 +129,7 @@ class YouTubePlaylistScraper:
             
             row = [
                 video.get("id", ""),
+                video_channel_map.get(video.get("id", ""), ""),  # Channel name
                 snippet.get("title", ""),
                 snippet.get("description", "").replace("\n", " ").replace("\r", " "),  # Remove newlines
                 content_details.get("duration", ""),
@@ -163,7 +171,7 @@ class YouTubePlaylistScraper:
             return
         
         # Step 4: Create CSV
-        output_file = self.create_csv(videos)
+        output_file = self.create_csv(videos, playlist_items)
         
         print("\\n" + "="*60)
         print(f"✨ Success! CSV saved to: {output_file}")
