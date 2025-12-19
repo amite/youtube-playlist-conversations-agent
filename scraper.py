@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+import typer
 
 
 class YouTubePlaylistScraper:
@@ -111,7 +112,7 @@ class YouTubePlaylistScraper:
         print(f"📝 Creating CSV file...")
         
         rows = [
-            ["title", "video_description", "video_length", "video_published_datetime", "video_likes", "video_views", "number_comments"]
+            ["video_id", "title", "video_description", "video_length", "video_published_datetime", "video_likes", "video_views", "number_comments"]
         ]
         
         for video in videos:
@@ -120,6 +121,7 @@ class YouTubePlaylistScraper:
             content_details = video.get("contentDetails", {})
             
             row = [
+                video.get("id", ""),
                 snippet.get("title", ""),
                 snippet.get("description", "").replace("\n", " ").replace("\r", " "),  # Remove newlines
                 content_details.get("duration", ""),
@@ -168,13 +170,12 @@ class YouTubePlaylistScraper:
         print("="*60 + "\\n")
 
 
-async def main():
-    """Main entry point."""
+def main(playlist_id: str = typer.Argument(..., help="YouTube playlist ID to scrape")):
+    """Main entry point for the YouTube Playlist Scraper CLI."""
     # Load environment variables
     load_dotenv()
     
     # Configuration
-    PLAYLIST_ID = "PL15F8EFEA8777D0C6"  # Replace with your playlist ID
     API_KEY = os.getenv("YOUTUBE_API_KEY")  # Your API key from .env file
     
     if not API_KEY:
@@ -186,18 +187,18 @@ async def main():
     
     # Generate timestamp for filename
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    output_filename = data_dir / f"youtube_playlist_{timestamp}.csv"
+    output_filename = data_dir / f"youtube_playlist_{playlist_id}_{timestamp}.csv"
     
     # Create scraper instance
     scraper = YouTubePlaylistScraper(
-        playlist_id=PLAYLIST_ID,
+        playlist_id=playlist_id,
         api_key=API_KEY,
         output_filename=str(output_filename)
     )
     
     # Run the scraper
-    await scraper.run()
+    asyncio.run(scraper.run())
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    typer.run(main)

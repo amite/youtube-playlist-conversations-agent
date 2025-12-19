@@ -4,6 +4,7 @@ YouTube Playlist to CSV Database - Complete Summary
 This project demonstrates how to extract complete data from any YouTube playlist and generate a properly formatted CSV database with the following columns:
 
 ```
+video_id: YouTube video ID
 title: Video title
 video_description: Full video description
 video_length: Duration in ISO 8601 format (PT1H2M3S)
@@ -38,7 +39,7 @@ cd youtube_playlist_scraper
 # Install and run
 uv sync
 uv run playwright install
-uv run scraper.py
+uv run python scraper.py PLAYLIST_ID  # Replace PLAYLIST_ID with your actual playlist ID e,g, PL15F8EFEA8777D0C6
 ```
 
 ---
@@ -92,6 +93,7 @@ dependencies = [
     "pandas>=2.3.3",
     "playwright>=1.40.0",
     "python-dotenv>=1.0.0",
+    "typer>=0.9.0",
 ]
 
 [build-system]
@@ -103,13 +105,16 @@ py-modules = ["scraper"]
 ```
 
 ### Installation and usage
-
+  
 # One-time setup
 uv sync
 uv run playwright install
 
-# Run the scraper
-uv run scraper.py
+# Run the scraper with Typer CLI
+uv run python scraper.py PLAYLIST_ID  # Replace PLAYLIST_ID with your actual playlist ID
+
+# Get help
+uv run python scraper.py --help
 
 #### Key Learnings & Important Notes
 1. Description Formatting
@@ -131,9 +136,9 @@ Continuous text without newlines produces more consistent embeddings
 Reduces token count and improves semantic understanding
 
 4. Reusability
-
+  
 Both scripts work for any public YouTube playlist
-Just change the PLAYLIST_ID variable
+Just provide the PLAYLIST_ID as a CLI argument
 API key is unlimited for public playlists
 
 5. Browser Console JavaScript
@@ -144,11 +149,18 @@ Handles file download gracefully
 Perfect for testing and quick exports
 
 6. Python Playwright
-
+  
 More robust for automation
 Better for scheduled/recurring tasks
 Easier to integrate into applications
 Can process multiple playlists programmatically
+
+7. Typer CLI Interface
+
+User-friendly command line interface
+Automatic help generation with --help
+Required argument validation
+Easy to extend with additional options
 
 #### Troubleshooting
 
