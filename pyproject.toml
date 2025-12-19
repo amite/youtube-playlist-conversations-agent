@@ -9,6 +9,7 @@ dependencies = [
     "pandas>=2.3.3",
     "playwright>=1.40.0",
     "python-dotenv>=1.0.0",
+    "typer>=0.20.0",
 ]
 
 [build-system]
