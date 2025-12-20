@@ -2,6 +2,44 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Quick Reference for Plan Mode
+
+**Last Verified**: 2025-12-20 | **Status**: Current ✓
+
+**Project**: YouTube semantic search engine (Phase 1: CLI-based evaluation)
+
+**System Pipeline**: Query → OpenAI Embed (text-embedding-3-small, 1536 dims) → ChromaDB search (title_embeddings + description_embeddings) → Weighted merge (60% title + 40% description) → SQLite fetch → Display + Manual rating
+
+**Main Entry Point**: [main.py](main.py) - Typer CLI with commands: index, search, rate, evaluate-all, stats
+
+**Data Storage**:
+- **SQLite** (`data/videos.db`): Videos metadata, embeddings log, evaluation results, test queries
+  - `videos`: video_id, title, description, channel_name, published_at, duration, views, likes, is_indexed
+  - `embeddings_log`: Tracks embedding generation (model, tokens, timestamps, cost)
+  - `evaluation_results`: Manual ratings (query, rating 1-5, best_position, notes)
+  - `test_queries`: Test suite (~30 queries) with query_text, query_type
+- **ChromaDB**: Two collections with 1536-dim embeddings (title_embeddings, description_embeddings)
+
+**Critical Design Patterns**:
+- Separate title/description embeddings → enables weighted merging and A/B testing
+- `is_indexed` flag → prevents re-embedding videos
+- Incremental indexing → reduces API costs
+- Manual evaluation strategy → Phase 1 focuses on quality assessment before automation
+
+**Common Changes in Plan Mode**:
+1. Adjust embedding weights (search ranking, default 60% title / 40% description)
+2. Add evaluation metrics (new stats output, query the evaluation_results table)
+3. Extend test query suite (add rows to test_queries, run evaluate-all)
+4. Optimize indexing (check is_indexed flag, update embeddings_log)
+
+**Important Constraints**:
+- Never read entire CSV files from `data/` folder (use SQL queries instead)
+- Preserve backward compatibility with ChromaDB collections
+- Always verify embedding model is text-embedding-3-small before changes
+- Test with `evaluate-all` after search pipeline changes
+
+---
+
 ## Project Overview
 
 A semantic search engine for YouTube videos. Phase 1 builds a stateless CLI-based semantic search tool that allows users to query a curated set of YouTube videos and get relevant results ranked by semantic similarity. The system uses OpenAI embeddings with ChromaDB for vector search and SQLite for structured metadata storage.
