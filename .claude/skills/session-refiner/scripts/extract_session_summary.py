@@ -192,8 +192,8 @@ class SessionExtractor:
 
 def generate_auto_save_path(title=None):
     """Generate timestamped filename in .claude/session-summaries/"""
-    # Get today's date
-    today = datetime.now().strftime('%Y%m%d')
+    # Get current datetime with time granularity
+    now = datetime.now().strftime('%Y%m%d-%H%M%S')
 
     # If no title provided, use generic name
     if not title:
@@ -206,7 +206,7 @@ def generate_auto_save_path(title=None):
         title = re.sub(r'-+', '-', title)       # Remove duplicate hyphens
         title = title.strip('-')
 
-    filename = f"{today}-{title}.md"
+    filename = f"{now}-{title}.md"
 
     # Get the project root (where .claude folder is)
     # This assumes script is at .claude/skills/session-refiner/scripts/
