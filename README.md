@@ -1,181 +1,172 @@
-YouTube Playlist to CSV Database - Complete Summary
+# YouTube Semantic Search Engine - Phase 1
 
 ### Project Overview
-This project demonstrates how to extract complete data from any YouTube playlist and generate a properly formatted CSV database with the following columns:
 
-```
-video_id: YouTube video ID
-title: Video title
-video_description: Full video description
-video_length: Duration in ISO 8601 format (PT1H2M3S)
-video_published_datetime: Exact timestamp when published
-video_likes: Like count
-video_views: View count
-number_comments: Comment count
-```
+A semantic search engine for YouTube videos that lets you search a curated dataset using natural language queries. Phase 1 implements a CLI-based tool to:
 
-The project uses the YouTube Data API v3 to fetch playlist data and was implemented using two approaches: Browser Console JavaScript and Python Playwright Automation.
+1. **Index videos**: Generate OpenAI embeddings for titles and descriptions separately
+2. **Search semantically**: Find relevant videos using weighted similarity matching
+3. **Evaluate quality**: Manually rate results and identify improvement areas
+4. **Track metrics**: Understand search performance by query type
+
+The system uses:
+- **ChromaDB** for vector similarity search (separate title/description collections)
+- **SQLite** for structured metadata and evaluation tracking
+- **OpenAI embeddings** for semantic understanding (text-embedding-3-small model)
 
 ### Quick Start
 
-Option 1: Browser Console (Fastest)
-
-Go to your YouTube playlist
-Press F12 or Ctrl+Shift+J to open Developer Console
-Go to Console tab
-Paste and run the JavaScript script (see below)
-File downloads automatically as youtube_playlist.csv
-
-Option 2: Python with uv (Most Reliable)
-
+**Step 1: Setup**
 ```bash
-# Create project
-mkdir youtube_playlist_scraper
-cd youtube_playlist_scraper
-
-# Create pyproject.toml (see template below)
-# Create scraper.py (see code below)
-
-# Install and run
+# Install dependencies
 uv sync
-uv run playwright install
-uv run python scraper.py PLAYLIST_ID  # Replace PLAYLIST_ID with your actual playlist ID e,g, PL15F8EFEA8777D0C6
+```
+
+**Step 2: Configure API Keys**
+Create a `.env` file:
+```
+OPENAI_API_KEY=sk-...  # Get from https://platform.openai.com/api-keys
+YOUTUBE_API_KEY=...     # Get from Google Cloud Console (if populating new video data)
+```
+
+**Step 3: Index Videos**
+```bash
+# Index 50 videos into ChromaDB
+uv run python main.py index --limit 50
+```
+
+**Step 4: Search**
+```bash
+# Perform a semantic search
+uv run python main.py search "machine learning tutorials"
+
+# Rate the results
+uv run python main.py rate
+
+# View stats
+uv run python main.py stats
+```
+
+**Step 5: Evaluate Search Quality**
+```bash
+# Run all test queries and collect ratings
+uv run python main.py evaluate-all
 ```
 
 ---
 
-## Setup: Google Cloud & API Key
+## Architecture & Design
 
-### Step 1: Create Google Cloud Project
-1. Go to https://console.cloud.google.com
-2. Create new project named "scraper-agent-project"
-3. Enable YouTube Data API v3 in the project
-4. Create an API Key in Credentials section
+### System Components
 
-### Step 2: Your API Key
-```
-(see .env)
-```
+1. **SQLite Database** (`data/videos.db`)
+   - `videos`: Video metadata (title, description, channel, stats, is_indexed flag)
+   - `embeddings_log`: Track embedding generation (model, tokens, timestamps)
+   - `evaluation_results`: Manual ratings and relevance assessments
+   - `test_queries`: Test query suite for systematic evaluation
 
-Step 3: Get Your Playlist ID
-From YouTube URL: https://www.youtube.com/playlist?list=**********
-The ID is everything after list=
+2. **ChromaDB Vector Store**
+   - `title_embeddings`: 1536-dim embeddings of video titles
+   - `description_embeddings`: 1536-dim embeddings of video descriptions
+   - Separate collections for better semantic quality and A/B testing
 
-Solution 1: JavaScript Browser Console Script
-Perfect for one-time use with no installation required.
-How to Use:
+3. **Search Pipeline**
+   - Generate query embedding via OpenAI API
+   - Query both ChromaDB collections independently
+   - Merge with weighted scoring: `(title_score * 0.6) + (description_score * 0.4)`
+   - Fetch full metadata from SQLite
+   - Display top 5 ranked results
 
-Navigate to your YouTube playlist
-Press F12 → Click Console tab
-Copy and paste the script below
-Press Enter
-Watch progress in console, file auto-downloads
+4. **Evaluation Framework**
+   - Manual rating system (1-5 relevance score)
+   - Test query suite across 5 types: topical, conceptual, technical, trend, tutorial
+   - Metrics: average relevance, top-1 accuracy, coverage, failure patterns
+   - Query type analysis to identify what works vs fails
 
-### Solution 2: Python Playwright Script
+### Why This Design?
 
-Better for automation and recurring tasks.
-Prerequisites:
+**Separate Title/Description Embeddings**
+- Titles are concise and focused (~60 chars)
+- Descriptions are detailed but noisy (~2000 chars with links, boilerplate)
+- Concatenating dilutes the title signal
+- Separate collections enable weighted merging and experimentation
 
-Python 3.9+
-uv package manager
+**Stateless Architecture**
+- Each search is independent (no conversation history)
+- Simpler to evaluate and improve systematically
+- Multi-turn support can be added in Phase 2 if data shows it's needed
 
-File 1: pyproject.toml
+**Manual Evaluation First**
+- Identify systematic failure patterns before adding automation
+- Gather evidence about what helps (metadata boosting, query expansion, etc.)
+- Data-driven approach to Phase 2 priorities
 
-```toml
-[project]
-name = "youtube-playlist-scraper"
-version = "0.1.0"
-description = "Download YouTube playlist data as CSV"
-requires-python = ">=3.9"
-dependencies = [
-    "ipykernel>=6.31.0",
-    "numpy>=2.0.2",
-    "pandas>=2.3.3",
-    "playwright>=1.40.0",
-    "python-dotenv>=1.0.0",
-    "typer>=0.9.0",
-]
+---
 
-[build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+## Phase 1 Goals & Success Criteria
 
-[tool.setuptools]
-py-modules = ["scraper"]
-```
+### Goals
+- ✅ Index 500-1000 videos successfully
+- ✅ Execute 30 test queries with manual ratings
+- ✅ Calculate metrics: average relevance, coverage, failure patterns
+- ✅ Understand if separate embeddings matter
+- ✅ Document what improvements are needed
 
-### Installation and usage
-  
-# One-time setup
-uv sync
-uv run playwright install
+### Success Criteria
+- Average relevance score > 3.5/5
+- Top-1 accuracy (best result in position 1) > 40%
+- Coverage (at least 1 relevant result in top 5) > 80%
+- Identify top 3 systematic failure patterns
 
-# Run the scraper with Typer CLI
-uv run python scraper.py PLAYLIST_ID  # Replace PLAYLIST_ID with your actual playlist ID
+---
 
-# Get help
-uv run python scraper.py --help
+## Test Query Suite
 
-#### Key Learnings & Important Notes
-1. Description Formatting
+Example queries by type:
 
-Python String Escaping Issue: Use "\\n" (single backslash) not "\\\\n" (double backslash) to match actual newline characters
-Descriptions with newlines should be flattened to single lines for better NLP/vector database compatibility
-The corrected Python line: snippet.get("description", "").replace("\\n", " ")
+**Topical** (specific subject)
+- "React hooks tutorial"
+- "Python pandas dataframe manipulation"
+- "CSS grid layout examples"
 
-2. CSV Formatting (RFC 4180 Compliance)
+**Conceptual** (understanding/comparison)
+- "Difference between SQL and NoSQL"
+- "What is Docker and why use it"
+- "REST vs GraphQL pros and cons"
 
-All text fields must be quoted: "field1","field2"
-Quotes within fields must be escaped by doubling: "He said ""hello"""
-This prevents parsing issues when descriptions contain commas or special characters
+**Technical** (how-to/implementation)
+- "Implement merge sort in Python"
+- "Build REST API with Node.js"
+- "Set up CI/CD pipeline with GitHub Actions"
 
-3. Vector Database Optimization
+**Trend** (recent/current)
+- "AI developments 2024"
+- "Latest JavaScript features"
+- "New React 19 features"
 
-Single-line descriptions are better for embedding models and NLP
-Continuous text without newlines produces more consistent embeddings
-Reduces token count and improves semantic understanding
+**Tutorial** (learning-focused)
+- "Machine learning for beginners"
+- "Learn TypeScript from scratch"
+- "Web development roadmap 2024"
 
-4. Reusability
-  
-Both scripts work for any public YouTube playlist
-Just provide the PLAYLIST_ID as a CLI argument
-API key is unlimited for public playlists
+---
 
-5. Browser Console JavaScript
+## Troubleshooting
 
-Works immediately in any browser with no installation
-Best for one-time extractions
-Handles file download gracefully
-Perfect for testing and quick exports
+| Problem | Solution |
+|---------|----------|
+| "Invalid API key" | Check `.env` file, verify OpenAI API key is valid |
+| "ChromaDB collection not found" | Run `index --limit N` to populate embeddings first |
+| "No results for search" | Verify videos are indexed; try simpler query |
+| "High token costs" | Use `index --limit 10` for testing before full indexing |
+| "Slow searches" | Ensure ChromaDB is fully loaded; check system RAM |
 
-6. Python Playwright
-  
-More robust for automation
-Better for scheduled/recurring tasks
-Easier to integrate into applications
-Can process multiple playlists programmatically
+---
 
-7. Typer CLI Interface
+## Use Cases
 
-User-friendly command line interface
-Automatic help generation with --help
-Required argument validation
-Easy to extend with additional options
-
-#### Troubleshooting
-
-Problem Solution"API key not valid"Verify API key and YouTube Data API v3 is enabledDescriptions still have newlinesUse single backslash: "\\n" not "\\\\n"Playwright install failsRun: 
-
-```bash
-uv run playwright install --with-deps
-```
-
-File won't download (JS)Try different browser or check popup blocker"Playlist not found"Ensure playlist ID is correct and playlist is public
-
-Use Cases
-✅ Vector Database Ingestion: Feed descriptions into Pinecone/Weaviate for semantic search
-✅ Data Analysis: Analyze video performance trends
-✅ Content Management: Maintain organized database of playlists
-✅ Research: Extract data for academic studies
-✅ Automation: Schedule regular exports of playlist data
-✅ Integration: Import into your own applications
+✅ **Semantic Search**: Find videos by meaning, not just keywords
+✅ **Quality Evaluation**: Understand search limitations and improve systematically
+✅ **Dataset Exploration**: Browse curated video collections semantically
+✅ **Research**: Extract patterns about what queries work well
+✅ **Phase 2 Planning**: Data-driven roadmap for improvements
