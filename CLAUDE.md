@@ -37,6 +37,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Preserve backward compatibility with ChromaDB collections
 - Always verify embedding model is text-embedding-3-small before changes
 - Test with `evaluate-all` after search pipeline changes
+- Always use `uv run` for Python commands (never use `python` or `python3` directly)
 
 ---
 
@@ -165,8 +166,9 @@ Fetch from SQLite → Display Results → Manual Rating
 
 **Plan Mode Plans**
 - IMPORTANT: When finishing a plan in plan mode, always write the plan to disk
+- **EXCEPTION**: During plan mode, you MAY edit files in `artifacts/wip/plans/` folder ONLY (all other files are read-only until plan approval)
 - Save plans to `artifacts/wip/plans/` folder
-- Naming convention: descriptive name (e.g., `semantic-cleaning-plan.md`, `api-refactor-plan.md`)
+- Naming convention: descriptive name (e.g., `semantic-cleaning-plan.md`, `api-refactor-plan.md`, `incremental-scraper-api-quota-fix.md`)
 - Include: objectives, implementation steps, affected files, testing strategy, any architectural decisions
 
 **Phase Completion Reports**

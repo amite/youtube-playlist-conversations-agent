@@ -7,23 +7,44 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 import typer
+import sqlite3
 
 
 class YouTubePlaylistScraper:
-    def __init__(self, playlist_id: str, api_key: str, output_filename: str | None = None):
+    def __init__(self, playlist_id: str, api_key: str, output_filename: str | None = None, db_path: str | None = None):
         """
         Initialize the YouTube playlist scraper.
-        
+
         Args:
             playlist_id: YouTube playlist ID (from URL: list=PLAYLIST_ID)
             api_key: YouTube Data API key
             output_filename: Optional custom output filename
+            db_path: Optional path to SQLite database for incremental scraping
         """
         self.playlist_id = playlist_id
         self.api_key = api_key
         self.output_filename = output_filename or f"playlist_{playlist_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
         self.base_url = "https://www.googleapis.com/youtube/v3"
-        
+        self.db_path = db_path
+        self.existing_video_ids = self._load_existing_video_ids()
+
+    def _load_existing_video_ids(self) -> set[str]:
+        """Load existing video IDs from database to skip re-fetching."""
+        if not self.db_path or not Path(self.db_path).exists():
+            return set()
+
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT video_id FROM videos")
+            existing_ids = {row[0] for row in cursor.fetchall()}
+            conn.close()
+            print(f"📂 Loaded {len(existing_ids)} existing video IDs from database")
+            return existing_ids
+        except Exception as e:
+            print(f"⚠️  Could not load existing IDs: {e}")
+            return set()
+
     async def fetch_playlist_items(self):
         """Fetch all items from the playlist using YouTube API."""
         print(f"📥 Fetching playlist items for: {self.playlist_id}")
@@ -53,17 +74,39 @@ class YouTubePlaylistScraper:
                     if "error" in data:
                         print(f"❌ API Error: {data['error']['message']}")
                         return None
-                    
-                    all_items.extend(data.get("items", []))
+
+                    items = data.get("items", [])
+
+                    # Filter out existing videos if database provided
+                    if self.existing_video_ids:
+                        new_items = [
+                            item for item in items
+                            if item["contentDetails"]["videoId"] not in self.existing_video_ids
+                        ]
+                        skipped = len(items) - len(new_items)
+                        all_items.extend(new_items)
+                        print(f"  ✓ Page {page_count + 1}: {len(new_items)} new, {skipped} skipped")
+                    else:
+                        all_items.extend(items)
+                        print(f"  ✓ Page {page_count + 1}: {len(all_items)} items total")
+
                     page_count += 1
-                    print(f"  ✓ Page {page_count}: {len(all_items)} items total")
                     
                     if "nextPageToken" not in data:
                         break
                     
                     page_token = data["nextPageToken"]
-                
-                print(f"✅ Fetched {len(all_items)} playlist items")
+
+                if self.existing_video_ids:
+                    print(f"✅ Fetched {len(all_items)} NEW playlist items ({len(self.existing_video_ids)} existing skipped)")
+                else:
+                    print(f"✅ Fetched {len(all_items)} playlist items")
+
+                # Early exit if no new videos
+                if len(all_items) == 0 and self.existing_video_ids:
+                    print("ℹ️  No new videos found in playlist")
+                    return []
+
                 return all_items
                 
             finally:
@@ -145,10 +188,15 @@ class YouTubePlaylistScraper:
         with open(output_path, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerows(rows)
-        
-        print(f"✅ CSV created: {output_path}")
-        print(f"   Total rows: {len(rows) - 1} videos")
-        
+
+        if self.existing_video_ids:
+            print(f"✅ CSV created: {output_path}")
+            print(f"   New videos: {len(rows) - 1}")
+            print(f"   Existing videos skipped: {len(self.existing_video_ids)}")
+        else:
+            print(f"✅ CSV created: {output_path}")
+            print(f"   Total rows: {len(rows) - 1} videos")
+
         return output_path
     
     async def run(self):
@@ -160,6 +208,7 @@ class YouTubePlaylistScraper:
         # Step 1: Fetch playlist items
         playlist_items = await self.fetch_playlist_items()
         if not playlist_items:
+            print("\nℹ️  No new videos to process. Database is up to date!")
             return
         
         # Step 2: Extract video IDs
@@ -192,16 +241,20 @@ def main(playlist_id: str = typer.Argument(..., help="YouTube playlist ID to scr
     # Create data directory if it doesn't exist
     data_dir = Path("data")
     data_dir.mkdir(exist_ok=True)
-    
+
     # Generate timestamp for filename
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     output_filename = data_dir / f"youtube_playlist_{playlist_id}_{timestamp}.csv"
-    
+
+    # Database path for incremental scraping
+    db_path = data_dir / "videos.db"
+
     # Create scraper instance
     scraper = YouTubePlaylistScraper(
         playlist_id=playlist_id,
         api_key=API_KEY,
-        output_filename=str(output_filename)
+        output_filename=str(output_filename),
+        db_path=str(db_path) if db_path.exists() else None
     )
     
     # Run the scraper
