@@ -43,6 +43,8 @@ Then:
   4. Resume work with fresh context window
 
 
+
+
 ────────────────────────────────────────────────────────────────────────────
 FILE STRUCTURE
 ────────────────────────────────────────────────────────────────────────────
@@ -139,15 +141,28 @@ Key Findings
 
 
 ────────────────────────────────────────────────────────────────────────────
-HOW TO STRUCTURE YOUR CONVERSATION FOR BETTER EXTRACTION
+SPECIAL MARKERS & SYNTAX FOR PROMPTING
 ────────────────────────────────────────────────────────────────────────────
 
-Use these patterns in your chat for clearer extraction:
+Use these explicit markers in your prompts while chatting. Session Refiner will
+automatically detect and extract them. This is the MOST IMPORTANT practice for
+ensuring quality extractions across sessions.
 
-Tasks:
-  ✓ "TODO: Add input validation"
-  ✓ "- [ ] Write unit tests"
-  ✓ "FIXME: Handle edge case in parsing"
+CORE MARKERS (Use in your chat messages):
+
+  TODO: [task description]
+    → Marks incomplete work you want to resume later
+    → Example: "TODO: Implement pagination for search results"
+
+  FIXME: [issue description]
+    → Marks known issues that need fixing
+    → Example: "FIXME: Handle edge case where no videos are found"
+
+  - [ ] [unchecked task]
+    → Standard checkbox format for task lists
+    → Example: "- [ ] Add unit tests for rate command"
+
+SUPPORTING PATTERNS:
 
 Decisions:
   ✓ "Decided to use JWT for auth"
@@ -163,10 +178,27 @@ Findings:
   ✓ "Important: This endpoint needs rate limiting"
   ✓ "Note: Update the migration script"
 
-Code:
+Code Snippets:
   ```javascript
   const example = () => { ... }
   ```
+
+PRACTICAL EXAMPLE IN A PROMPT:
+
+When you're working and want to track progress, write:
+
+  TODO: Implement pagination for search results
+  FIXME: Handle edge case where no videos are found
+  - [ ] Add unit tests for rate command
+  - [ ] Write integration tests
+
+  Decided to use ChromaDB for vector storage (better than Pinecone for local dev)
+
+  Fixed the embedding timeout issue by increasing API request timeout to 60s
+
+  Key finding: Separate title/description embeddings work better than concatenated
+
+These markers will be automatically extracted into the Session Refiner summary.
 
 
 ────────────────────────────────────────────────────────────────────────────
