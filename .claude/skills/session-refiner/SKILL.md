@@ -13,11 +13,13 @@ When your conversation is getting long:
 
 ```
 You: "Use Session Refiner to create a summary"
-Claude: [Generates compact markdown summary]
-You: [Download summary, start fresh chat, paste at top]
+Claude: [Generates compact markdown summary and automatically saves it]
+You: [Start fresh chat, paste summary at top of conversation]
 ```
 
 That's it. You've reset your context window while keeping continuity.
+
+**Automatic Saving:** Summaries are automatically saved to `.claude/session-summaries/` with timestamped filenames like `20251220-data-cleaning-plan.md` for easy reference and organization.
 
 ## What Gets Extracted
 
@@ -57,11 +59,12 @@ Claude will:
 1. Scan the current conversation for key information
 2. Extract essential details only
 3. Generate a markdown summary
-4. You download it
+4. Automatically save it to `.claude/session-summaries/YYYYMMDD-brief-title.md`
+5. Display the file path
 
 Then:
 1. Start a new chat session
-2. Paste the summary at the top
+2. Paste the summary at the top (or reference the file path in `.claude/session-summaries/`)
 3. Say: "Here's where I left off. Continue from here."
 4. Resume work with fresh context window
 
@@ -195,7 +198,12 @@ When you request a summary, Claude will:
 
 3. **Generate markdown**: Clean, copy-paste-ready format.
 
-4. **Hand to you**: You control what happens next—download, edit, paste, continue.
+4. **Automatically save**: Write summary to `.claude/session-summaries/YYYYMMDD-brief-title.md`
+   - Format: `YYYYMMDD` (ISO date) + `-` + brief title (kebab-case)
+   - Example: `20251220-data-cleaning-plan.md`
+   - Automatically creates directory if needed
+
+5. **Hand to you**: You can paste the summary content or reference the saved file.
 
 ## Technical Details
 

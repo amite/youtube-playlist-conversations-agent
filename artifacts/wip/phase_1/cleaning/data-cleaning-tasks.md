@@ -1,10 +1,15 @@
 ## Data Cleaning Task Sheet
 
+Phase 0.1 Data Cleaning
+
 - Remove duplicates
 - Detect all missing values
 - Remove rows with missing values in the description column
 - Trim white space
-- Clean the description column - I
+
+
+Phase 0.2 Data Cleaning
+- Clean the video_description column - I
 
 
 ## Semantic Quality issues

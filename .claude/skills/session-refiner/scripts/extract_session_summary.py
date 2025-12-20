@@ -5,9 +5,12 @@ from a long conversation to create a compact markdown summary.
 
 Usage:
     python extract_session_summary.py <input_file> [--output summary.md] [--max-tokens 5000]
+    python extract_session_summary.py <input_file> [--auto-save] [--title "Brief Title"]
 
 Input format: Plain text conversation (copy-paste from chat)
 Output: Compact markdown summary suitable for starting a fresh session
+
+Auto-save: Saves to .claude/session-summaries/YYYYMMDD-brief-title.md
 """
 
 import re
@@ -16,6 +19,7 @@ import argparse
 from pathlib import Path
 from datetime import datetime
 from collections import defaultdict
+import re as regex_module
 
 
 class SessionExtractor:
@@ -186,6 +190,33 @@ class SessionExtractor:
         return ''.join(sections)
 
 
+def generate_auto_save_path(title=None):
+    """Generate timestamped filename in .claude/session-summaries/"""
+    # Get today's date
+    today = datetime.now().strftime('%Y%m%d')
+
+    # If no title provided, use generic name
+    if not title:
+        title = 'session-summary'
+    else:
+        # Convert title to kebab-case
+        title = title.lower()
+        title = re.sub(r'[^\w\s-]', '', title)  # Remove special chars
+        title = re.sub(r'[\s_]+', '-', title)   # Replace spaces/underscores with hyphens
+        title = re.sub(r'-+', '-', title)       # Remove duplicate hyphens
+        title = title.strip('-')
+
+    filename = f"{today}-{title}.md"
+
+    # Get the project root (where .claude folder is)
+    # This assumes script is at .claude/skills/session-refiner/scripts/
+    script_dir = Path(__file__).resolve()
+    session_summaries_dir = script_dir.parents[2] / 'session-summaries'
+    session_summaries_dir.mkdir(parents=True, exist_ok=True)
+
+    return session_summaries_dir / filename
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Extract session summary from conversation text'
@@ -193,8 +224,16 @@ def main():
     parser.add_argument('input_file', help='Input conversation text file')
     parser.add_argument(
         '--output', '-o',
-        default='session-summary.md',
-        help='Output markdown file (default: session-summary.md)'
+        help='Output markdown file (default: auto-save to .claude/session-summaries/)'
+    )
+    parser.add_argument(
+        '--auto-save', '-a',
+        action='store_true',
+        help='Auto-save to .claude/session-summaries/ with timestamp'
+    )
+    parser.add_argument(
+        '--title', '-t',
+        help='Title for auto-saved file (used in filename)'
     )
     parser.add_argument(
         '--max-tokens', '-m',
@@ -220,8 +259,16 @@ def main():
     # Generate
     summary = extractor.generate_markdown()
 
+    # Determine output path
+    if args.auto_save or not args.output:
+        # Auto-save mode: generate timestamped filename
+        output_path = generate_auto_save_path(args.title)
+    else:
+        # Custom output path
+        output_path = Path(args.output)
+
     # Write output
-    output_path = Path(args.output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(summary)
 
     print(f"✓ Summary generated: {output_path}")

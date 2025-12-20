@@ -123,6 +123,15 @@ Fetch from SQLite → Display Results → Manual Rating
 - Gathers data on what query types work vs fail
 - Informs Phase 2 priorities (metadata boosting, query understanding, etc.)
 
+## Working with Data Files
+
+**Large CSV Files in @data Folder**
+- IMPORTANT: Never read entire CSV files from the `data/` directory
+- Always sample only 20-30 records when examining CSV files using the offset and limit parameters
+- Use `head` command via bash for quick inspection, or read with line limits via Read tool
+- This prevents unnecessary context usage and keeps Claude Code responsive
+- For analysis across the entire dataset, use pandas or SQL queries within scripts, not by reading the file directly
+
 ## Common Development Tasks
 
 **Add a new evaluation metric**
