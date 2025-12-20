@@ -161,6 +161,110 @@ Fetch from SQLite → Display Results → Manual Rating
 - Gathers data on what query types work vs fail
 - Informs Phase 2 priorities (metadata boosting, query understanding, etc.)
 
+## Documentation Structure
+
+**Phase Completion Reports**
+- IMPORTANT: All phase completion reports must be saved in `artifacts/wip/phase_1/cleaning/` folder
+- Format: `phase-0-X-completion-report.md` where X is the phase number
+- These reports document what was built, validation results, and next steps
+- Do NOT save completion reports in `.claude/` folder
+
+**Session Summaries**
+- Session summaries should be saved in `.claude/session-summaries/` (created automatically by session-refiner skill)
+- Use timestamp format: `YYYYMMDD-topic.md`
+
+## Database Migrations
+
+The project uses a lightweight, custom migration system to manage SQLite schema evolution safely. No external dependencies (no Alembic).
+
+### Migration System Overview
+
+**How It Works**
+- Migrations live in `scripts/migrations/versions/` as Python files
+- Each migration file has `upgrade(conn)` and `downgrade(conn)` functions
+- Schema version is tracked in a `schema_version` table in the database
+- Migrations are applied in order and can be rolled back
+
+**CLI Commands** (all from project root)
+```bash
+# Check current migration status
+uv run python scripts/migrate.py status
+
+# Apply pending migrations
+uv run python scripts/migrate.py upgrade
+
+# Apply migrations up to specific version
+uv run python scripts/migrate.py upgrade --to 3
+
+# Rollback last migration
+uv run python scripts/migrate.py downgrade
+
+# Rollback multiple migrations
+uv run python scripts/migrate.py downgrade --steps 2
+
+# Create a new migration file
+uv run python scripts/migrate.py create "add video tags table"
+```
+
+### Creating a New Migration
+
+1. **Create migration file**
+   ```bash
+   uv run python scripts/migrate.py create "my feature name"
+   ```
+   This generates `scripts/migrations/versions/00X_my_feature_name.py`
+
+2. **Edit the migration file**
+   ```python
+   def upgrade(conn):
+       """Apply migration."""
+       cursor = conn.cursor()
+       cursor.execute("""
+           ALTER TABLE videos ADD COLUMN new_field TEXT
+       """)
+       conn.commit()
+
+   def downgrade(conn):
+       """Rollback migration."""
+       cursor = conn.cursor()
+       cursor.execute("ALTER TABLE videos DROP COLUMN new_field")
+       conn.commit()
+   ```
+
+3. **Test the migration**
+   ```bash
+   uv run python scripts/migrate.py upgrade
+   # Test that the change works
+   uv run python scripts/migrate.py downgrade
+   # Verify rollback works
+   uv run python scripts/migrate.py upgrade
+   ```
+
+### Migration Best Practices
+
+**Safe Migrations** (low risk, use migrations):
+- Adding nullable columns: `ALTER TABLE videos ADD COLUMN new_field TEXT`
+- Adding new tables: `CREATE TABLE new_table (...)`
+- Adding indexes: `CREATE INDEX idx_name ON table(column)`
+- Renaming columns with data copy (CREATE new, copy data, DROP old)
+
+**Breaking Changes** (high complexity, consider re-creating database):
+- Changing primary key structure
+- Major schema refactoring (3+ tables affected)
+- SQLite type changes (not supported by ALTER TABLE)
+- When migration complexity > value of preserving data
+
+**When to Drop and Re-ingest** (if data is not critical):
+- Early prototyping phase
+- Schema experiments
+- Breaking changes where migration cost exceeds re-ingestion cost
+
+**Critical Data to Preserve** (always migrate if possible):
+- `evaluation_results` table (manual ratings are valuable)
+- `embeddings_log` table (API cost tracking and embedding history)
+
+---
+
 ## Working with Data Files
 
 **Large CSV Files in @data Folder**
