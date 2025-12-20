@@ -163,6 +163,12 @@ Fetch from SQLite → Display Results → Manual Rating
 
 ## Documentation Structure
 
+**Plan Mode Plans**
+- IMPORTANT: When finishing a plan in plan mode, always write the plan to disk
+- Save plans to `artifacts/wip/plans/` folder
+- Naming convention: descriptive name (e.g., `semantic-cleaning-plan.md`, `api-refactor-plan.md`)
+- Include: objectives, implementation steps, affected files, testing strategy, any architectural decisions
+
 **Phase Completion Reports**
 - IMPORTANT: All phase completion reports must be saved in `artifacts/wip/phase_1/cleaning/` folder
 - Format: `phase-0-X-completion-report.md` where X is the phase number
