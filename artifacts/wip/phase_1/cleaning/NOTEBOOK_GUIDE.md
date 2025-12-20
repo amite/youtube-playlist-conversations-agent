@@ -37,7 +37,7 @@ We cleaned 410 YouTube video descriptions by removing noise:
 |---------|---------------|------|
 | **Overall Statistics** | How much did descriptions shrink? | 30-50% reduction (balanced) |
 | **Keyword Preservation** | Did we lose important terms? | >90% of keywords survived |
-| **High-Reduction Cases** | Some videos got cut 70%+. Still readable? | Manual verification needed |
+| **High-Reduction Cases** | Some videos had their `description` column cut 70%+ to create `cleaned_description`. Still readable? | Manual verification needed |
 | **Topic Coherence** | Can you still tell what videos are about? | 95%+ of samples pass |
 
 ---
@@ -93,7 +93,14 @@ We cleaned 410 YouTube video descriptions by removing noise:
 
 ### What "Outliers" Means
 
-Videos with >70% reduction - these had most of their description text removed.
+Videos with >70% reduction in the `description` → `cleaned_description` transformation.
+
+**Specifically:** The original `description` column was trimmed down so much that the resulting `cleaned_description` is 70%+ shorter than the original.
+
+**Example:** A video might have:
+- `description` (original): 2,192 characters
+- `cleaned_description` (after cleaning): 60 characters
+- **Reduction:** 97.3% (meaning 97.3% of the original text was removed)
 
 ### Why High Reduction Isn't Always Bad
 
@@ -257,6 +264,16 @@ The cleaning isn't perfect, but it's good enough to use:
 
 **Q: What does "mean" and "median" mean?**
 A: Mean = average. Median = the middle value. If you line up all reductions in order, median is the one in the middle.
+
+**Q: When you say "videos got cut 70%+", what exactly do you mean?**
+A: We're comparing the `description` column (original) to the `cleaned_description` column (after cleaning). A "70% reduction" means the cleaned description is 70% shorter than the original.
+
+**Example:**
+- Original `description`: 2,192 characters
+- Cleaned `cleaned_description`: 60 characters
+- Reduction: (2192 - 60) / 2192 = 97.3%
+
+The original was mostly timestamps, links, and boilerplate. The 60-character cleaned version keeps the core topic.
 
 **Q: Is 97% reduction bad?**
 A: Not if the content is preserved. That video was 97% timestamps and links, 3% actual content. Cleaning it removes the noise but keeps the message.
