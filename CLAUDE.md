@@ -174,10 +174,10 @@ Fetch from SQLite → Display Results → Manual Rating
 
 **Plan Mode Plans**
 - IMPORTANT: When finishing a plan in plan mode, always write the plan to disk
-- **EXCEPTION**: During plan mode, you MAY edit files in `artifacts/wip/plans/` folder ONLY (all other files are read-only until plan approval)
-- Save plans to `artifacts/wip/plans/` folder
+- CRITICAL: Save all plans to `artifacts/wip/plans/` folder (this is the ONLY location where files can be edited during plan mode)
 - Naming convention: descriptive name (e.g., `semantic-cleaning-plan.md`, `api-refactor-plan.md`, `incremental-scraper-api-quota-fix.md`)
 - Include: objectives, implementation steps, affected files, testing strategy, any architectural decisions
+- All other files are read-only until plan approval
 
 **Phase Completion Reports**
 - IMPORTANT: All phase completion reports must be saved in `artifacts/wip/phase_1/cleaning/` folder
@@ -187,7 +187,7 @@ Fetch from SQLite → Display Results → Manual Rating
 
 **Session Summaries**
 - Session summaries should be saved in `.claude/session-summaries/` (created automatically by session-refiner skill)
-- Use timestamp format: `YYYYMMDD-topic.md`
+- Use timestamp format: `YYYYMMDD-HHMMSS-topic.md`
 
 ## Database Migrations
 
