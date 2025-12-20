@@ -283,7 +283,28 @@ uv run python main.py index --limit N               # Generate embeddings for ne
 
 ## Next Steps
 
-### Phase 0.3: Integration (Optional, Recommended)
+### Phase 0.2.5: Semantic Loss Analysis (NEW - Recommended)
+**Goal:** Validate semantic cleaning quality via notebook-based analysis
+
+**Tasks:**
+1. Create Jupyter notebook: `notebooks/semantic_cleaning_analysis.ipynb`
+2. Overall statistics: Distribution of reduction % across all 410 videos
+3. Keyword preservation: Extract top 50 technical terms, verify 90%+ preservation
+4. High-reduction case review: Manual inspection of videos with >60% reduction
+5. Topic coherence validation: Sample 20 videos, verify 95%+ preserve core topic
+6. Generate recommendation: Go/no-go decision for Phase 0.4
+
+**Rationale:** With 39.1% average reduction, deeper validation ensures embeddings will be based on semantically complete data before generation in Phase 0.4.
+
+**Expected Outcome:** Clear validation report + confidence to proceed to Phase 0.4
+
+**Estimated Effort:** 1-1.5 hours
+
+**Plan File:** `artifacts/wip/plans/phase-0-2-5-semantic-loss-analysis-plan.md`
+
+---
+
+### Phase 0.3: Integration (Optional, Phase 0.3+)
 **Goal:** Automate cleaning during ingestion for new data
 
 **Tasks:**
@@ -293,6 +314,10 @@ uv run python main.py index --limit N               # Generate embeddings for ne
 4. Test full pipeline: scrape → ingest → clean → embed → search
 
 **Estimated Effort:** 1-2 hours
+
+**Priority:** Can be deferred to Phase 0.3+ if Phase 0.2.5 validates current approach
+
+---
 
 ### Phase 0.4: Embedding Generation
 **Goal:** Generate embeddings using cleaned data
@@ -305,6 +330,10 @@ uv run python main.py index --limit N               # Generate embeddings for ne
 
 **Estimated Effort:** 2-3 hours
 
+**Dependency:** Phase 0.2.5 validation (recommended before proceeding)
+
+---
+
 ### Phase 0.5: Search Evaluation
 **Goal:** Measure semantic search quality improvement
 
@@ -315,6 +344,8 @@ uv run python main.py index --limit N               # Generate embeddings for ne
 4. Document findings and recommend final approach
 
 **Estimated Effort:** 2-3 hours
+
+**Dependency:** Phase 0.4 must complete first
 
 ---
 
