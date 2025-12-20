@@ -201,7 +201,7 @@ class YouTubePlaylistScraper:
         csv_path: str,
         start_time: datetime,
         status: str = "success",
-        error: str = None,
+        error: str | None = None,
     ):
         """Log scraper run to database for historical tracking."""
         if not self.db_path:
@@ -278,16 +278,17 @@ class YouTubePlaylistScraper:
 
         # Append old videos from previous CSV (if incremental scraping)
         new_video_count = len(rows) - 1
-        skipped_count = 0
         if self.existing_video_ids:
             appended_count = self._append_previous_csv_rows(output_path)
             total_count = new_video_count + appended_count
+            # skipped_count should represent videos skipped in this run (existing videos not re-fetched)
             skipped_count = len(self.existing_video_ids)
             print(f"✅ CSV created: {output_path}")
             print(f"   New videos: {new_video_count}")
             print(f"   Previous videos: {appended_count}")
             print(f"   Total rows: {total_count} videos")
         else:
+            skipped_count = 0
             print(f"✅ CSV created: {output_path}")
             print(f"   Total rows: {new_video_count} videos")
 
@@ -328,12 +329,16 @@ class YouTubePlaylistScraper:
             output_file, new_count, skipped_count = self.create_csv(videos, playlist_items)
 
             # Step 5: Log run to database
-            total_csv_rows = new_count + (len(self.existing_video_ids) if self.existing_video_ids else new_count)
+            # Calculate total CSV rows: new videos + previously existing videos
+            if self.existing_video_ids:
+                total_csv_rows = new_count + len(self.existing_video_ids)
+            else:
+                total_csv_rows = new_count
             self._log_scraper_run(
                 new_count=new_count,
                 skipped_count=skipped_count,
                 total_csv_rows=total_csv_rows,
-                csv_path=output_file,
+                csv_path=str(output_file),
                 start_time=start_time,
             )
 
