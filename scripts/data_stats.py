@@ -144,6 +144,50 @@ def main():
         for query_type, count in cursor.fetchall():
             print(f"    - {query_type}: {count}")
 
+    # Semantic cleaning statistics
+    print_section("Semantic Cleaning (Phase 0.2)")
+    cursor.execute("SELECT COUNT(*) FROM videos WHERE cleaned_title IS NOT NULL")
+    cleaned_count = cursor.fetchone()[0]
+    uncleaned_count = total - cleaned_count
+    print(f"  Videos with cleaned data: {cleaned_count}/{total}")
+    print(f"  Videos pending cleaning: {uncleaned_count}/{total}")
+
+    if cleaned_count > 0:
+        # Title length statistics
+        cursor.execute(
+            "SELECT AVG(LENGTH(cleaned_title)), MIN(LENGTH(cleaned_title)), MAX(LENGTH(cleaned_title)) FROM videos WHERE cleaned_title IS NOT NULL"
+        )
+        avg_clean_title, min_clean_title, max_clean_title = cursor.fetchone()
+        cursor.execute(
+            "SELECT AVG(LENGTH(title)) FROM videos WHERE cleaned_title IS NOT NULL"
+        )
+        avg_raw_title = cursor.fetchone()[0]
+        title_reduction_pct = 100 * (1 - avg_clean_title / avg_raw_title) if avg_raw_title > 0 else 0
+
+        print(f"\n  Title length:")
+        print(f"    - Raw (avg): {avg_raw_title:.0f} chars")
+        print(f"    - Cleaned (avg): {avg_clean_title:.0f} chars")
+        print(f"    - Reduction: {title_reduction_pct:.1f}%")
+
+        # Description length statistics
+        cursor.execute(
+            "SELECT AVG(LENGTH(cleaned_description)), MIN(LENGTH(cleaned_description)), MAX(LENGTH(cleaned_description)) FROM videos WHERE cleaned_title IS NOT NULL AND cleaned_description IS NOT NULL AND cleaned_description != '[No Description]'"
+        )
+        result = cursor.fetchone()
+        if result[0]:
+            avg_clean_desc, min_clean_desc, max_clean_desc = result
+            cursor.execute(
+                "SELECT AVG(LENGTH(description)) FROM videos WHERE cleaned_title IS NOT NULL AND description IS NOT NULL AND description != '[No Description]'"
+            )
+            avg_raw_desc = cursor.fetchone()[0]
+            desc_reduction_pct = 100 * (1 - avg_clean_desc / avg_raw_desc) if avg_raw_desc > 0 else 0
+
+            print(f"\n  Description length:")
+            print(f"    - Raw (avg): {avg_raw_desc:.0f} chars")
+            print(f"    - Cleaned (avg): {avg_clean_desc:.0f} chars")
+            print(f"    - Reduction: {desc_reduction_pct:.1f}%")
+            print(f"    - Target goal: 30-50% reduction ✓" if 30 <= desc_reduction_pct <= 50 else f"    - Target goal: 30-50% reduction (actual: {desc_reduction_pct:.1f}%)")
+
     conn.close()
     print_section("✓ Data validation complete")
     return 0

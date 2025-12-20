@@ -39,11 +39,19 @@
       "baseline_cost": 15000,
       "quick_ref_cost": 600,
       "notes": "Plan mode session completed with Quick Reference optimization"
+    },
+    {
+      "timestamp": "2025-12-20T09:37:48.918974",
+      "session_id": "f091831d-90d7-4b90-8b87-310d76142465",
+      "estimated_tokens_saved": 14400,
+      "baseline_cost": 15000,
+      "quick_ref_cost": 600,
+      "notes": "Plan mode session completed with Quick Reference optimization"
     }
   ],
   "baseline_exploration_cost": 15000,
   "quick_reference_load_cost": 600,
   "estimated_average_savings_per_session": 14400,
-  "total_sessions_tracked": 5,
-  "total_tokens_saved_estimate": 72000
+  "total_sessions_tracked": 6,
+  "total_tokens_saved_estimate": 86400
 }
