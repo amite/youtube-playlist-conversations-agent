@@ -23,7 +23,8 @@ Status:     UPDATED (now with database-aware incremental scraping)
 KEY IMPROVEMENT: Scraper now checks videos.db before fetching from YouTube API
             - If database exists: loads existing video_ids, skips them (saves API quota!)
             - If no database: fetches all videos (backward compatible)
-            - Result: Only NEW videos are fetched and added to CSV
+            - Result: NEW videos fetched from API, THEN concatenated with previous CSV archive
+            - CSV Output: Complete archive (new + all previous videos) for easy viewing
             - API Savings: 50%+ reduction for incremental updates (18 calls → 1-2 calls)
 
 CSV Structure (raw from YouTube API):
@@ -157,7 +158,8 @@ When you want to add new videos to the system:
    $ python scraper.py
    └─ Checks videos.db for existing video_ids
    └─ Only fetches NEW videos from YouTube API (saves 50%+ API quota!)
-   └─ Creates CSV with only NEW videos (not duplicates)
+   └─ Creates CSV with NEW videos + concatenates previous archive
+   └─ Result: Complete archive CSV for easy viewing of all content
 
 2. Ingest new videos (Phase 0.1 cleaning only)
    $ uv run python scripts/ingest_csv.py
@@ -222,7 +224,7 @@ With raw columns (our approach):
 
 | Script | Role | Phase | Input | Output | Idempotent |
 |--------|------|-------|-------|--------|-----------|
-| scraper.py | Fetch from YouTube (now with incremental skip!) | Pre-Phase | URL + videos.db | CSV (only new) | NO (appends, but smart) |
+| scraper.py | Fetch from YouTube (incremental, concatenates archive) | Pre-Phase | URL + videos.db | CSV (new + archive) | NO (appends, but smart) |
 | ingest_csv.py | CSV → SQLite + Phase 0.1 cleaning | Phase 0.1 | CSV | DB | NO (inserts new) |
 | apply_semantic_cleaning.py | Phase 0.2 semantic cleaning | Phase 0.2 | DB | DB | YES (can re-run) |
 | main.py index | Embedding generation | Phase 0.4 | DB | ChromaDB | NO (creates embeddings) |

@@ -79,14 +79,33 @@ def create_schema(db_path: Path) -> None:
     """
     )
 
+    # Scraper runs table
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS scraper_runs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            playlist_id TEXT NOT NULL,
+            run_started_at TIMESTAMP NOT NULL,
+            run_completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            new_videos_count INTEGER DEFAULT 0,
+            existing_videos_skipped INTEGER DEFAULT 0,
+            total_videos_in_csv INTEGER DEFAULT 0,
+            csv_path TEXT,
+            status TEXT DEFAULT 'success',
+            error_message TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """
+    )
+
     conn.commit()
 
-    # Mark the database as version 1 (baseline schema)
-    mark_version(conn, 1)
+    # Mark the database as version 2 (baseline schema with scraper_runs)
+    mark_version(conn, 2)
 
     conn.close()
     print(f"✓ Database schema created at {db_path}")
-    print(f"✓ Schema version: 1")
+    print(f"✓ Schema version: 2")
 
 
 if __name__ == "__main__":

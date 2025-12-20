@@ -39,6 +39,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Test with `evaluate-all` after search pipeline changes
 - Always use `uv run` for Python commands (never use `python` or `python3` directly)
 
+**Database Modification Rule** ⚠️:
+- CRITICAL: Anytime the database schema is modified, altered, or extended (new tables, columns, indexes, etc.), follow the standardized migration procedure (see "Database Migrations" section below)
+- DO NOT directly modify the database schema in init_db.py or anywhere else
+- ALWAYS create a migration file first (`uv run python scripts/migrate.py create "description"`)
+- ALWAYS update both the migration AND init_db.py to keep them in sync
+- ALWAYS test migrations with upgrade and downgrade before considering complete
+- ALWAYS verify migration status with `uv run python scripts/migrate.py status`
+
 ---
 
 ## Project Overview
