@@ -1,0 +1,8 @@
+{
+  "plan_sessions": [],
+  "baseline_exploration_cost": 15000,
+  "quick_reference_load_cost": 600,
+  "estimated_average_savings_per_session": 14400,
+  "total_sessions_tracked": 0,
+  "total_tokens_saved_estimate": 0
+}
