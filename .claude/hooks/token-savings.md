@@ -20,5 +20,8 @@ Check anytime:
 cat .claude/plan-stats.json
 
 # See just the summary
+bat .claude/plan-stats.json | jq '.total_tokens_saved_estimate, .total_sessions_tracked'
+
+# Or with jq
 jq '.total_tokens_saved_estimate, .total_sessions_tracked' .claude/plan-stats.json
 Zero extra work: The hook runs automatically at the end of each session, no manual logging needed. Your savings are tracked transparently in the background.
