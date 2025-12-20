@@ -1,4 +1,5 @@
-Summary
+### Summary
+
 I've successfully created a comprehensive collection of 12 SQL query scripts in scripts/queries/ to provide multiple statistical views of your data/videos.db database. Here's what was created:
 Core Query Scripts (8 files)
 overview.sql - Database overview with key metrics (videos, channels, indexing progress, engagement rates)
@@ -13,7 +14,9 @@ Extended Query Scripts (3 files)
 cost_analysis.sql - Detailed API cost tracking, projections, and monthly trends
 comparison_queries.sql - Before/after algorithm comparisons for A/B testing
 export_reports.sql - CSV and markdown exports for spreadsheets and documentation
-Documentation
+
+### Documentation
+
 README.md - Comprehensive guide with usage examples, workflows, and schema reference
 QUICK_START.sh - Quick reference shell script with all common commands
 Usage
