@@ -1,11 +1,23 @@
 PROJECT SUMMARY: YouTube Semantic Search Agent (Stateless, Single-Query)
 =========================================================================
 
+VISION:
+A semantic search engine that helps users find the right YouTube videos to learn from—not by matching keywords, but by understanding what they're actually trying to do.
+
 CONTEXT:
 - Building a CLI-based semantic search tool for YouTube videos
 - Each query is INDEPENDENT (no conversation history/multi-turn)
 - Manual evaluation system to assess quality and iterate
 - Phase 1 focus: Prove semantic search works, identify improvements needed
+
+WHY THIS MATTERS:
+YouTube has millions of videos, but keyword search is frustrating:
+- Too many results that match words but not intent
+- Hard to find videos at the right depth level (beginner vs advanced)
+- Can't express nuanced needs ("recent videos from a specific creator" or "tutorials under 5 minutes")
+- Quality videos get buried behind clickbait matches
+
+Our semantic search engine solves this by understanding meaning, not just keywords.
 
 CORE ARCHITECTURE:
 Query → Embed → Search ChromaDB → Rank/Merge → Fetch from SQLite → Display → Manual Rating
@@ -138,15 +150,44 @@ Result #2: ML Crash Course for Beginners
 
 Rate this search (1-5): _
 
-EVALUATION METHODOLOGY:
-Test Query Suite (30 queries minimum):
-- Topical: "React hooks tutorial", "Python data visualization"
-- Conceptual: "Difference between REST and GraphQL"
-- Technical: "How to implement binary search tree"
-- Trend: "Recent AI developments 2024"
-- Tutorial: "Machine learning for beginners"
-- Troubleshooting: "Fix Docker connection refused error"
+SAMPLE QUERIES: Real Use Cases Our Engine Should Handle
+========================================================
 
+These queries represent actual user intents we're optimizing for:
+
+**Learning & Tutorials**
+- "Fetch me videos under 5 minutes that explain embeddings"
+- "Show me videos that explain local ollama setup"
+- "I need a video that helps me build my own AI engineer portfolio"
+- "Show me top freecodecamp videos about building APIs with next js from 2025 only"
+- "How to build my own mcp tutorial 2025 with at least 5k likes"
+- "Stanford lecture on agents and rag"
+
+**Current Knowledge & Recent Trends**
+- "Show me 5 latest videos on vector search"
+- "Show me last weeks updates from openai claude and Gemini"
+- "Show me what's new from Anthropic"
+- "There's a new langchain academy course"
+- "2025 ibm videos on AI agents"
+
+**Advanced Technical Topics**
+- "Show me videos that show how to deploy an ai model to production"
+- "Is there a video about the future of ui design in the age of AI?"
+- "Advanced Rag techniques from 2025 only with more than 10k views"
+- "Deep dive on agent architectures"
+- "Document Rag techniques"
+- "Advanced self healing rag"
+- "Chunk optimisation in rag"
+- "Context engineering video from nate b jones"
+
+**Creator-Specific & Filtered Queries**
+- "Which nate b jones videos are talking about prompting techniques?"
+- "Adam Lucek videos"
+- "Is there anything here that can help with few shot prompting?"
+- "Claude agent harness"
+- "Show me n8n 2.0 videos with at least 4 comments"
+
+EVALUATION METHODOLOGY:
 For each query:
 - Run search
 - Display results
@@ -161,6 +202,7 @@ Metrics to Track:
 - Top-1 accuracy (% where best result is position 1)
 - Coverage (% of queries with at least 1 relevant result in top 5)
 - Failure patterns (common reasons for relevance < 3)
+- Query complexity vs success (simple vs complex filters)
 
 PHASE 1 DEVELOPMENT PLAN (3 weeks at 28 hours/week):
 
@@ -215,13 +257,31 @@ Days 18-21 (16h): Tuning & Documentation
   - Write README and documentation
   - Plan Phase 2 priorities
 
-SUCCESS CRITERIA:
+SUCCESS CRITERIA (Outcome-Focused):
+
+**Core Search Quality**
 - Index 500-1000 videos successfully
-- Execute 30 test queries with ratings
+- Execute all sample queries (30+) with ratings
 - Average relevance score > 3.5/5
+- Achieve 60%+ top-1 accuracy (best result in position 1)
+- Achieve 85%+ coverage (at least 1 relevant result in top 5)
+
+**Query Type Performance**
+- Learning queries: Capable of finding beginner-friendly, concise content
+- Creator-specific: Successfully identify videos from named creators
+- Advanced topics: Return specialized, deep technical content
+- Time-filtered: Surface recent content appropriately (understand "2025", "last week")
+- Filtered results: Handle queries with engagement/quality metrics (likes, views, comments)
+
+**System Insights**
 - Identify top 3 systematic failure patterns
+- Understand which query types work well vs poorly
 - Understand if separate embeddings matter for quality
-- Document what improvements are needed (metadata filtering, query understanding, etc.)
+- Document gaps in capabilities (missing features or limitations)
+- Recommend Phase 2 priorities based on failure patterns
+
+**Phase 1 Success = Proof That Semantic Search Adds Value**
+Demonstrate that our semantic understanding outperforms simple keyword matching—i.e., that users would actually prefer this over YouTube's built-in search.
 
 PHASE 1 SCOPE:
 ✓ Semantic search with vector similarity
@@ -282,31 +342,44 @@ KEY UNKNOWNS (To Answer in Phase 1):
 5. What are systematic failure patterns?
    → Tag failures with reasons, find common themes
 
-EXAMPLE TEST QUERIES BY TYPE:
-Topical (specific subject):
-- "React hooks tutorial"
-- "Python pandas dataframe manipulation"
-- "CSS grid layout examples"
+EXAMPLE TEST QUERIES BY TYPE (From Real Use Cases):
 
-Conceptual (understanding/comparison):
-- "Difference between SQL and NoSQL"
-- "What is Docker and why use it"
-- "REST vs GraphQL pros and cons"
+**Learning & Depth-Aware Queries** (understanding at specific level):
+- "Fetch me videos under 5 minutes that explain embeddings"
+- "Show me videos that explain local ollama setup"
+- "I need a video that helps me build my own AI engineer portfolio"
+- "Stanford lecture on agents and rag"
 
-Technical (how-to/implementation):
-- "Implement merge sort in Python"
-- "Build REST API with Node.js"
-- "Set up CI/CD pipeline with GitHub Actions"
+**Creator-Specific Searches** (finding content from a known creator):
+- "Which nate b jones videos are talking about prompting techniques?"
+- "Adam Lucek videos"
+- "Context engineering video from nate b jones"
 
-Trend (recent/current):
-- "AI developments 2024"
-- "Latest JavaScript features"
-- "New React 19 features"
+**Advanced Technical Topics** (specialized, deep knowledge):
+- "Advanced Rag techniques from 2025 only with more than 10k views"
+- "Deep dive on agent architectures"
+- "Chunk optimisation in rag"
+- "Advanced self healing rag"
+- "Document Rag techniques"
 
-Tutorial (learning-focused):
-- "Machine learning for beginners"
-- "Learn TypeScript from scratch"
-- "Web development roadmap 2024"
+**Filtered & Time-Specific** (with constraints):
+- "Show me top freecodecamp videos about building APIs with next js from 2025 only"
+- "How to build my own mcp tutorial 2025 with at least 5k likes"
+- "Show me 5 latest videos on vector search"
+- "Show me last weeks updates from openai claude and Gemini"
+- "2025 ibm videos on AI agents"
+
+**Current Knowledge & Trends** (recent/emerging):
+- "Show me what's new from Anthropic"
+- "There's a new langchain academy course"
+- "Is there a video about the future of ui design in the age of AI?"
+
+**Conceptual & Intent-Based** (finding understanding/answers):
+- "Is there a video about the future of ui design in the age of AI?"
+- "Is there anything here that can help with few shot prompting?"
+- "Show me videos that show how to deploy an ai model to production"
+- "Claude agent harness"
+- "Show me n8n 2.0 videos with at least 4 comments"
 
 CRITICAL ARCHITECTURAL NOTE:
 NO localStorage or sessionStorage in artifacts (not supported in claude.ai)
