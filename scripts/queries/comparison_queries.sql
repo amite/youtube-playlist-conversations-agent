@@ -7,7 +7,6 @@
 .mode column
 
 SELECT '=== OVERALL EVALUATION METRICS ===' as section;
-SELECT '';
 
 SELECT
     'Total Evaluations' as metric,
@@ -17,9 +16,7 @@ SELECT
     ROUND(SUM(CASE WHEN best_result_position = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) as top1_accuracy_pct
 FROM evaluation_results;
 
-SELECT '';
-SELECT '=== RELEVANCE SCORE DISTRIBUTION ===' as section;
-SELECT '';
+SELECT '=== RELEVANCE SCORE DISTRIBUTION ===' as section
 
 SELECT
     relevance_score,
@@ -30,9 +27,7 @@ WHERE relevance_score IS NOT NULL
 GROUP BY relevance_score
 ORDER BY relevance_score DESC;
 
-SELECT '';
-SELECT '=== EVALUATION METRICS BY TIME PERIOD ===' as section;
-SELECT '';
+SELECT '=== EVALUATION METRICS BY TIME PERIOD ===' as section
 
 -- Compare early vs late evaluations (useful for tracking improvement over time)
 WITH periods AS (
@@ -56,9 +51,7 @@ FROM periods
 WHERE period IS NOT NULL
 GROUP BY period;
 
-SELECT '';
-SELECT '=== DAILY EVALUATION TRENDS ===' as section;
-SELECT '';
+SELECT '=== DAILY EVALUATION TRENDS ===' as section
 
 SELECT
     DATE(created_at) as date,
@@ -71,9 +64,7 @@ GROUP BY DATE(created_at)
 ORDER BY date DESC
 LIMIT 30;
 
-SELECT '';
-SELECT '=== PERFORMANCE BY QUERY TYPE ===' as section;
-SELECT '';
+SELECT '=== PERFORMANCE BY QUERY TYPE ===' as section
 
 SELECT
     tq.query_type,
@@ -87,9 +78,7 @@ WHERE tq.query_type IS NOT NULL
 GROUP BY tq.query_type
 ORDER BY avg_relevance DESC;
 
-SELECT '';
-SELECT '=== QUERIES SHOWING IMPROVEMENT (ascending relevance) ===' as section;
-SELECT '';
+SELECT '=== QUERIES SHOWING IMPROVEMENT (ascending relevance) ===' as section
 
 -- Group evaluations by query and sort by relevance to show improvement trend
 WITH query_evals AS (
@@ -120,9 +109,7 @@ WHERE latest_relevance > first_relevance
 GROUP BY query_text
 ORDER BY improvement DESC;
 
-SELECT '';
-SELECT '=== QUERIES SHOWING REGRESSION (descending relevance) ===' as section;
-SELECT '';
+SELECT '=== QUERIES SHOWING REGRESSION (descending relevance) ===' as section
 
 -- Queries that got worse
 WITH query_evals AS (
@@ -153,9 +140,7 @@ WHERE latest_relevance < first_relevance
 GROUP BY query_text
 ORDER BY regression ASC;
 
-SELECT '';
-SELECT '=== BEST RESULT POSITION DISTRIBUTION ===' as section;
-SELECT '';
+SELECT '=== BEST RESULT POSITION DISTRIBUTION ===' as section
 
 SELECT
     best_result_position as position,
@@ -166,9 +151,7 @@ WHERE best_result_position IS NOT NULL
 GROUP BY best_result_position
 ORDER BY best_result_position;
 
-SELECT '';
-SELECT '=== TEMPLATE: COMPARE TWO TIME PERIODS ===' as section;
-SELECT '';
+SELECT '=== TEMPLATE: COMPARE TWO TIME PERIODS ===' as section
 
 -- This is a template to compare metrics before/after a specific date
 -- Edit the date cutoff below to compare different algorithm versions

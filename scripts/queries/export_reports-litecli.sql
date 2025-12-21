@@ -4,7 +4,6 @@
 -- Usage: uv run litecli data/videos.db < scripts/queries/export_reports-litecli.sql
 
 SELECT '=== CHANNEL LEADERBOARD ===' as section;
-SELECT '';
 
 SELECT
     channel_name,
@@ -19,9 +18,7 @@ FROM videos
 GROUP BY channel_name
 ORDER BY video_count DESC, total_channel_views DESC;
 
-SELECT '';
-SELECT '=== CONTENT DISTRIBUTION REPORT ===' as section;
-SELECT '';
+SELECT '=== CONTENT DISTRIBUTION REPORT ===' as section
 
 SELECT
     '<5 min' as category,
@@ -58,9 +55,7 @@ SELECT
     ROUND(AVG(duration_seconds), 0)
 FROM videos WHERE duration_seconds >= 3600;
 
-SELECT '';
-SELECT '=== SEARCH QUALITY SCORECARD ===' as section;
-SELECT '';
+SELECT '=== SEARCH QUALITY SCORECARD ===' as section
 
 SELECT
     'Total Evaluations' as metric,
@@ -82,9 +77,7 @@ SELECT
     COUNT(DISTINCT query_text)
 FROM evaluation_results;
 
-SELECT '';
-SELECT '=== TOP 20 VIDEOS BY VIEWS ===' as section;
-SELECT '';
+SELECT '=== TOP 20 VIDEOS BY VIEWS ===' as section
 
 SELECT
     title,
@@ -96,9 +89,7 @@ FROM videos
 ORDER BY view_count DESC
 LIMIT 20;
 
-SELECT '';
-SELECT '=== DATA QUALITY SUMMARY ===' as section;
-SELECT '';
+SELECT '=== DATA QUALITY SUMMARY ===' as section
 
 SELECT
     'Videos with Title' as aspect,
@@ -136,9 +127,7 @@ SELECT
     ROUND(SUM(CASE WHEN cleaned_title IS NOT NULL THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1)
 FROM videos;
 
-SELECT '';
-SELECT '=== COMPLETE VIDEO CATALOG ===' as section;
-SELECT '';
+SELECT '=== COMPLETE VIDEO CATALOG ===' as section
 
 SELECT
     video_id,
@@ -156,9 +145,7 @@ SELECT
 FROM videos
 ORDER BY view_count DESC;
 
-SELECT '';
-SELECT '=== EMBEDDING COST REPORT ===' as section;
-SELECT '';
+SELECT '=== EMBEDDING COST REPORT ===' as section
 
 SELECT
     strftime('%Y-%m-%d', created_at) as date,
@@ -171,9 +158,7 @@ FROM embeddings_log
 GROUP BY DATE(created_at)
 ORDER BY date DESC;
 
-SELECT '';
-SELECT '=== TEST QUERY RESULTS MATRIX ===' as section;
-SELECT '';
+SELECT '=== TEST QUERY RESULTS MATRIX ===' as section
 
 SELECT
     tq.query_text,

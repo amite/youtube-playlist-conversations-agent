@@ -3,7 +3,6 @@
 -- Usage: uv run litecli data/videos.db < scripts/queries/embedding_progress-litecli.sql
 
 SELECT '=== EMBEDDING GENERATION STATUS ===' as section;
-SELECT '';
 
 SELECT
     'Total Videos' as metric,
@@ -25,9 +24,7 @@ SELECT
     ROUND(SUM(CASE WHEN is_indexed = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1)
 FROM videos;
 
-SELECT '';
-SELECT '=== EMBEDDINGS LOG SUMMARY ===' as section;
-SELECT '';
+SELECT '=== EMBEDDINGS LOG SUMMARY ===' as section
 
 SELECT
     COALESCE(embedding_type, 'NO EMBEDDINGS') as embedding_type,
@@ -41,9 +38,7 @@ FROM embeddings_log
 GROUP BY embedding_type, model
 ORDER BY embedding_type;
 
-SELECT '';
-SELECT '=== API COST ANALYSIS ===' as section;
-SELECT '';
+SELECT '=== API COST ANALYSIS ===' as section
 
 -- Cost calculation: $0.00002 per 1K tokens for text-embedding-3-small
 SELECT
@@ -59,9 +54,7 @@ SELECT
     ROUND(SUM(token_count) / 1000.0 * 0.00002, 4)
 FROM embeddings_log;
 
-SELECT '';
-SELECT '=== EMBEDDING TIMELINE ===' as section;
-SELECT '';
+SELECT '=== EMBEDDING TIMELINE ===' as section
 
 SELECT
     strftime('%Y-%m-%d', created_at) as date,
@@ -73,9 +66,7 @@ GROUP BY strftime('%Y-%m-%d', created_at)
 ORDER BY date DESC
 LIMIT 30;
 
-SELECT '';
-SELECT '=== PROJECTION FOR REMAINING VIDEOS ===' as section;
-SELECT '';
+SELECT '=== PROJECTION FOR REMAINING VIDEOS ===' as section
 
 -- Estimate cost for unindexed videos based on average token count
 WITH avg_tokens AS (
@@ -90,9 +81,7 @@ SELECT
     ROUND((SELECT COUNT(*) FROM videos WHERE is_indexed = 0) * 2 * avg_per_embedding / 1000.0 * 0.00002, 4) as estimated_cost_usd
 FROM avg_tokens;
 
-SELECT '';
-SELECT '=== EMBEDDING DETAILS (last 20 entries) ===' as section;
-SELECT '';
+SELECT '=== EMBEDDING DETAILS (last 20 entries) ===' as section
 
 SELECT
     el.video_id,

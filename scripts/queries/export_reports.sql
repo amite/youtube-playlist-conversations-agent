@@ -9,7 +9,6 @@
 .mode column
 
 SELECT '=== CHANNEL LEADERBOARD (CSV format for spreadsheets) ===' as section;
-SELECT '';
 
 .mode csv
 
@@ -29,9 +28,7 @@ ORDER BY video_count DESC, total_channel_views DESC;
 -- Return to column mode
 .mode column
 
-SELECT '';
-SELECT '=== CONTENT DISTRIBUTION REPORT ===' as section;
-SELECT '';
+SELECT '=== CONTENT DISTRIBUTION REPORT ===' as section
 
 SELECT
     '=== VIDEO LENGTH DISTRIBUTION ===' as metric;
@@ -80,9 +77,7 @@ FROM videos WHERE duration_seconds >= 3600;
 
 .mode column
 
-SELECT '';
-SELECT '=== SEARCH QUALITY SCORECARD ===' as section;
-SELECT '';
+SELECT '=== SEARCH QUALITY SCORECARD ===' as section
 
 .mode markdown
 
@@ -110,9 +105,7 @@ FROM evaluation_results;
 
 .mode column
 
-SELECT '';
-SELECT '=== TOP 20 VIDEOS BY VIEWS (Markdown Table) ===' as section;
-SELECT '';
+SELECT '=== TOP 20 VIDEOS BY VIEWS (Markdown Table) ===' as section
 
 .mode markdown
 
@@ -130,9 +123,7 @@ LIMIT 20;
 
 .mode column
 
-SELECT '';
-SELECT '=== DATA QUALITY SUMMARY ===' as section;
-SELECT '';
+SELECT '=== DATA QUALITY SUMMARY ===' as section
 
 .mode markdown
 
@@ -168,9 +159,7 @@ FROM videos;
 
 .mode column
 
-SELECT '';
-SELECT '=== COMPLETE VIDEO CATALOG EXPORT (CSV) ===' as section;
-SELECT '';
+SELECT '=== COMPLETE VIDEO CATALOG EXPORT (CSV) ===' as section
 
 .mode csv
 
@@ -192,9 +181,7 @@ ORDER BY view_count DESC;
 
 .mode column
 
-SELECT '';
-SELECT '=== EMBEDDING COST REPORT (CSV) ===' as section;
-SELECT '';
+SELECT '=== EMBEDDING COST REPORT (CSV) ===' as section
 
 .mode csv
 
@@ -211,9 +198,7 @@ ORDER BY date DESC;
 
 .mode column
 
-SELECT '';
-SELECT '=== TEST QUERY RESULTS MATRIX ===' as section;
-SELECT '';
+SELECT '=== TEST QUERY RESULTS MATRIX ===' as section
 
 .mode markdown
 

@@ -16,6 +16,12 @@
       "driver": "SQLite",
       "database": "data/checkpoints.db",
       "name": "checkpoints"
+    },
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "videos_db",
+      "database": "./data/videos.db"
     }
   ]
 }

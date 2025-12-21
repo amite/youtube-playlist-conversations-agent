@@ -6,7 +6,6 @@
 .mode column
 
 SELECT '=== DATABASE OVERVIEW ===' as section;
-SELECT '';
 
 -- Total counts and progress
 SELECT
@@ -39,9 +38,7 @@ SELECT
     SUM(CASE WHEN cleaned_description IS NOT NULL THEN 1 ELSE 0 END)
 FROM videos;
 
-SELECT '';
-SELECT '=== CONTENT METRICS ===' as section;
-SELECT '';
+SELECT '=== CONTENT METRICS ===' as section
 
 SELECT
     ROUND(AVG(duration_seconds), 0) as avg_duration_sec,
@@ -52,9 +49,7 @@ SELECT
     ROUND(AVG(comment_count), 0) as avg_comments
 FROM videos;
 
-SELECT '';
-SELECT '=== ENGAGEMENT RATES ===' as section;
-SELECT '';
+SELECT '=== ENGAGEMENT RATES ===' as section
 
 SELECT
     ROUND(AVG(CAST(like_count AS FLOAT) / NULLIF(view_count, 0) * 100), 2) as avg_like_rate_pct,
@@ -62,9 +57,7 @@ SELECT
 FROM videos
 WHERE view_count > 0;
 
-SELECT '';
-SELECT '=== DATABASE TABLES ===' as section;
-SELECT '';
+SELECT '=== DATABASE TABLES ===' as section
 
 SELECT
     'videos' as table_name,

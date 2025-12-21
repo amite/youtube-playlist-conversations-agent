@@ -3,7 +3,6 @@
 -- Usage: uv run litecli data/videos.db < scripts/queries/content_stats-litecli.sql
 
 SELECT '=== VIDEO LENGTH DISTRIBUTION ===' as section;
-SELECT '';
 
 WITH length_tiers AS (
     SELECT
@@ -31,9 +30,7 @@ ORDER BY
         ELSE 5
     END;
 
-SELECT '';
-SELECT '=== POPULARITY TIERS (by view count) ===' as section;
-SELECT '';
+SELECT '=== POPULARITY TIERS (by view count) ===' as section
 
 WITH popularity_tiers AS (
     SELECT
@@ -60,9 +57,7 @@ ORDER BY
         ELSE 4
     END;
 
-SELECT '';
-SELECT '=== ENGAGEMENT METRICS ===' as section;
-SELECT '';
+SELECT '=== ENGAGEMENT METRICS ===' as section
 
 SELECT
     'Overall Stats' as metric,
@@ -72,9 +67,7 @@ SELECT
 FROM videos
 WHERE view_count > 0;
 
-SELECT '';
-SELECT '=== MOST VIEWED VIDEOS ===' as section;
-SELECT '';
+SELECT '=== MOST VIEWED VIDEOS ===' as section
 
 SELECT
     title,
@@ -88,9 +81,7 @@ FROM videos
 ORDER BY view_count DESC
 LIMIT 20;
 
-SELECT '';
-SELECT '=== LEAST VIEWED VIDEOS ===' as section;
-SELECT '';
+SELECT '=== LEAST VIEWED VIDEOS ===' as section
 
 SELECT
     title,
@@ -104,9 +95,7 @@ WHERE view_count > 0
 ORDER BY view_count ASC
 LIMIT 20;
 
-SELECT '';
-SELECT '=== PUBLICATION DATE DISTRIBUTION ===' as section;
-SELECT '';
+SELECT '=== PUBLICATION DATE DISTRIBUTION ===' as section
 
 WITH date_dist AS (
     SELECT

@@ -3,7 +3,6 @@
 -- Usage: uv run litecli data/videos.db < scripts/queries/search_testing-litecli.sql
 
 SELECT '=== TEST QUERY SUITE STATUS ===' as section;
-SELECT '';
 
 SELECT
     'Total Test Queries' as metric,
@@ -26,9 +25,7 @@ SELECT
     - COALESCE((SELECT COUNT(DISTINCT query_text) FROM evaluation_results), 0)
 FROM test_queries;
 
-SELECT '';
-SELECT '=== QUERIES BY TYPE ===' as section;
-SELECT '';
+SELECT '=== QUERIES BY TYPE ===' as section
 
 SELECT
     COALESCE(query_type, 'unknown') as query_type,
@@ -37,9 +34,7 @@ FROM test_queries
 GROUP BY query_type
 ORDER BY query_count DESC;
 
-SELECT '';
-SELECT '=== EVALUATION COVERAGE BY QUERY TYPE ===' as section;
-SELECT '';
+SELECT '=== EVALUATION COVERAGE BY QUERY TYPE ===' as section
 
 SELECT
     tq.query_type,
@@ -54,9 +49,7 @@ WHERE tq.query_type IS NOT NULL
 GROUP BY tq.query_type
 ORDER BY coverage_pct DESC;
 
-SELECT '';
-SELECT '=== ALL TEST QUERIES ===' as section;
-SELECT '';
+SELECT '=== ALL TEST QUERIES ===' as section
 
 SELECT
     tq.id,
@@ -71,9 +64,7 @@ LEFT JOIN evaluation_results er ON tq.query_text = er.query_text
 GROUP BY tq.id, tq.query_text, tq.query_type
 ORDER BY tq.query_type, tq.query_text;
 
-SELECT '';
-SELECT '=== QUERIES WITHOUT EVALUATIONS ===' as section;
-SELECT '';
+SELECT '=== QUERIES WITHOUT EVALUATIONS ===' as section
 
 SELECT
     tq.id,
@@ -85,9 +76,7 @@ LEFT JOIN evaluation_results er ON tq.query_text = er.query_text
 WHERE er.id IS NULL
 ORDER BY tq.query_type, tq.query_text;
 
-SELECT '';
-SELECT '=== HIGHEST RATED QUERIES ===' as section;
-SELECT '';
+SELECT '=== HIGHEST RATED QUERIES ===' as section
 
 SELECT
     tq.query_text,
@@ -101,9 +90,7 @@ GROUP BY tq.query_text, tq.query_type
 ORDER BY avg_relevance DESC, evaluation_count DESC
 LIMIT 20;
 
-SELECT '';
-SELECT '=== LOWEST RATED QUERIES ===' as section;
-SELECT '';
+SELECT '=== LOWEST RATED QUERIES ===' as section
 
 SELECT
     tq.query_text,
@@ -117,9 +104,7 @@ GROUP BY tq.query_text, tq.query_type
 ORDER BY avg_relevance ASC, evaluation_count DESC
 LIMIT 20;
 
-SELECT '';
-SELECT '=== EXPECTED CHANNELS ANALYSIS ===' as section;
-SELECT '';
+SELECT '=== EXPECTED CHANNELS ANALYSIS ===' as section
 
 SELECT
     expected_channels,

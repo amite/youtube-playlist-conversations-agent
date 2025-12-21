@@ -4,7 +4,6 @@
 -- Usage: uv run litecli data/videos.db < scripts/queries/cost_analysis-litecli.sql
 
 SELECT '=== EMBEDDING COST SUMMARY ===' as section;
-SELECT '';
 
 SELECT
     'Total Embeddings Generated' as metric,
@@ -21,9 +20,7 @@ SELECT
     SUM(CASE WHEN embedding_type = 'description' THEN 1 ELSE 0 END)
 FROM embeddings_log;
 
-SELECT '';
-SELECT '=== HISTORICAL COST (from embeddings_log) ===' as section;
-SELECT '';
+SELECT '=== HISTORICAL COST (from embeddings_log) ===' as section
 
 -- Cost breakdown by embedding type
 WITH cost_by_type AS (
@@ -49,9 +46,7 @@ SELECT
     SUM(cost_usd)
 FROM cost_by_type;
 
-SELECT '';
-SELECT '=== COST PER VIDEO ===' as section;
-SELECT '';
+SELECT '=== COST PER VIDEO ===' as section
 
 -- Average cost to generate both embeddings (title + description) for a video
 WITH video_costs AS (
@@ -80,9 +75,7 @@ SELECT
     (SELECT ROUND(MAX(tokens), 0) FROM video_costs)
 FROM video_costs;
 
-SELECT '';
-SELECT '=== PROJECTION FOR REMAINING UNINDEXED VIDEOS ===' as section;
-SELECT '';
+SELECT '=== PROJECTION FOR REMAINING UNINDEXED VIDEOS ===' as section
 
 WITH estimates AS (
     SELECT
@@ -98,9 +91,7 @@ SELECT
     ROUND(unindexed_count * 2 * avg_tokens_per_embedding / 1000.0 * 0.00002, 4) as estimated_cost_usd
 FROM estimates;
 
-SELECT '';
-SELECT '=== PROJECTED TOTAL PROJECT COST ===' as section;
-SELECT '';
+SELECT '=== PROJECTED TOTAL PROJECT COST ===' as section
 
 WITH costs AS (
     SELECT
@@ -125,9 +116,7 @@ SELECT
     ROUND(spent + (total_videos - indexed_count) * 2 * avg_per_embedding / 1000.0 * 0.00002, 4)
 FROM costs;
 
-SELECT '';
-SELECT '=== COST BY CHANNEL ===' as section;
-SELECT '';
+SELECT '=== COST BY CHANNEL ===' as section
 
 SELECT
     v.channel_name,
@@ -140,9 +129,7 @@ GROUP BY v.channel_name
 ORDER BY cost_usd DESC
 LIMIT 20;
 
-SELECT '';
-SELECT '=== DAILY COST TRENDS ===' as section;
-SELECT '';
+SELECT '=== DAILY COST TRENDS ===' as section
 
 SELECT
     DATE(created_at) as date,
@@ -154,9 +141,7 @@ GROUP BY DATE(created_at)
 ORDER BY date DESC
 LIMIT 30;
 
-SELECT '';
-SELECT '=== WEEKLY COST TRENDS ===' as section;
-SELECT '';
+SELECT '=== WEEKLY COST TRENDS ===' as section
 
 SELECT
     strftime('%Y-W%W', created_at) as week,
@@ -168,9 +153,7 @@ GROUP BY strftime('%Y-W%W', created_at)
 ORDER BY week DESC
 LIMIT 12;
 
-SELECT '';
-SELECT '=== TOKEN DISTRIBUTION ===' as section;
-SELECT '';
+SELECT '=== TOKEN DISTRIBUTION ===' as section
 
 WITH token_stats AS (
     SELECT

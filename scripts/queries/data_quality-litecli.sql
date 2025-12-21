@@ -3,7 +3,6 @@
 -- Usage: uv run litecli data/videos.db < scripts/queries/data_quality-litecli.sql
 
 SELECT '=== DATA COMPLETENESS ===' as section;
-SELECT '';
 
 SELECT
     'Total Videos' as metric,
@@ -47,9 +46,7 @@ SELECT
     ROUND(SUM(CASE WHEN published_at IS NOT NULL THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1)
 FROM videos;
 
-SELECT '';
-SELECT '=== NULL FIELDS SUMMARY ===' as section;
-SELECT '';
+SELECT '=== NULL FIELDS SUMMARY ===' as section
 
 SELECT
     'cleaned_title (null count)',
@@ -61,9 +58,7 @@ SELECT
     SUM(CASE WHEN cleaned_description IS NULL THEN 1 ELSE 0 END)
 FROM videos;
 
-SELECT '';
-SELECT '=== POTENTIAL DUPLICATES (by title) ===' as section;
-SELECT '';
+SELECT '=== POTENTIAL DUPLICATES (by title) ===' as section
 
 WITH title_dupes AS (
     SELECT
@@ -83,9 +78,7 @@ FROM title_dupes
 ORDER BY count DESC
 LIMIT 20;
 
-SELECT '';
-SELECT '=== OUTLIERS: UNUSUALLY LONG VIDEOS ===' as section;
-SELECT '';
+SELECT '=== OUTLIERS: UNUSUALLY LONG VIDEOS ===' as section
 
 SELECT
     title,
@@ -98,9 +91,7 @@ WHERE duration_seconds > 7200
 ORDER BY duration_seconds DESC
 LIMIT 20;
 
-SELECT '';
-SELECT '=== OUTLIERS: EXTREME VIEW COUNTS ===' as section;
-SELECT '';
+SELECT '=== OUTLIERS: EXTREME VIEW COUNTS ===' as section
 
 WITH stats AS (
     SELECT
@@ -118,9 +109,7 @@ WHERE v.view_count > (s.avg_views + 2 * s.stddev)
 ORDER BY v.view_count DESC
 LIMIT 20;
 
-SELECT '';
-SELECT '=== OUTLIERS: UNUSUALLY SHORT VIDEOS ===' as section;
-SELECT '';
+SELECT '=== OUTLIERS: UNUSUALLY SHORT VIDEOS ===' as section
 
 SELECT
     title,
@@ -132,9 +121,7 @@ WHERE duration_seconds < 60
 ORDER BY duration_seconds ASC
 LIMIT 20;
 
-SELECT '';
-SELECT '=== DATA ENTRY ISSUES ===' as section;
-SELECT '';
+SELECT '=== DATA ENTRY ISSUES ===' as section
 
 SELECT
     'Videos with zero views' as issue,

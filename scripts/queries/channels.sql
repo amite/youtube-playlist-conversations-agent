@@ -6,7 +6,6 @@
 .mode column
 
 SELECT '=== TOP CHANNELS BY VIDEO COUNT ===' as section;
-SELECT '';
 
 SELECT
     channel_name,
@@ -22,9 +21,7 @@ GROUP BY channel_name
 ORDER BY video_count DESC, avg_views DESC
 LIMIT 30;
 
-SELECT '';
 SELECT '=== CHANNEL DISTRIBUTION ===' as section;
-SELECT '';
 
 WITH channel_stats AS (
     SELECT
@@ -46,9 +43,7 @@ FROM channel_stats
 GROUP BY size_tier
 ORDER BY channel_count DESC;
 
-SELECT '';
 SELECT '=== MOST ACTIVE CHANNELS (by upload date) ===' as section;
-SELECT '';
 
 SELECT
     channel_name,
@@ -61,9 +56,7 @@ GROUP BY channel_name
 ORDER BY MAX(published_at) DESC
 LIMIT 20;
 
-SELECT '';
 SELECT '=== HIGHEST ENGAGEMENT CHANNELS ===' as section;
-SELECT '';
 
 SELECT
     channel_name,

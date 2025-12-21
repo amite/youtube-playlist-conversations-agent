@@ -6,7 +6,6 @@
 .mode column
 
 SELECT '=== EVALUATION SUMMARY ===' as section;
-SELECT '';
 
 SELECT
     'Total Evaluations' as metric,
@@ -28,9 +27,7 @@ SELECT
     ROUND(SUM(CASE WHEN best_result_position = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0), 1)
 FROM evaluation_results;
 
-SELECT '';
-SELECT '=== RELEVANCE SCORE DISTRIBUTION ===' as section;
-SELECT '';
+SELECT '=== RELEVANCE SCORE DISTRIBUTION ===' as section
 
 SELECT
     'Score ' || relevance_score as score,
@@ -41,9 +38,7 @@ WHERE relevance_score IS NOT NULL
 GROUP BY relevance_score
 ORDER BY relevance_score DESC;
 
-SELECT '';
-SELECT '=== BEST RESULT POSITION DISTRIBUTION ===' as section;
-SELECT '';
+SELECT '=== BEST RESULT POSITION DISTRIBUTION ===' as section
 
 SELECT
     'Position ' || best_result_position as position,
@@ -54,9 +49,7 @@ WHERE best_result_position IS NOT NULL
 GROUP BY best_result_position
 ORDER BY best_result_position;
 
-SELECT '';
-SELECT '=== EVALUATION BY QUERY TYPE ===' as section;
-SELECT '';
+SELECT '=== EVALUATION BY QUERY TYPE ===' as section
 
 SELECT
     tq.query_type,
@@ -69,9 +62,7 @@ LEFT JOIN test_queries tq ON er.query_text = tq.query_text
 GROUP BY tq.query_type
 ORDER BY evaluations DESC;
 
-SELECT '';
-SELECT '=== RECENT EVALUATIONS (last 20) ===' as section;
-SELECT '';
+SELECT '=== RECENT EVALUATIONS (last 20) ===' as section
 
 SELECT
     datetime(er.created_at) as evaluated_at,
@@ -83,9 +74,7 @@ FROM evaluation_results er
 ORDER BY er.created_at DESC
 LIMIT 20;
 
-SELECT '';
-SELECT '=== EVALUATION TIMELINE ===' as section;
-SELECT '';
+SELECT '=== EVALUATION TIMELINE ===' as section
 
 SELECT
     DATE(er.created_at) as evaluation_date,
@@ -97,9 +86,7 @@ GROUP BY DATE(er.created_at)
 ORDER BY evaluation_date DESC
 LIMIT 30;
 
-SELECT '';
-SELECT '=== QUERIES WITHOUT EVALUATIONS ===' as section;
-SELECT '';
+SELECT '=== QUERIES WITHOUT EVALUATIONS ===' as section
 
 SELECT
     tq.id,
@@ -112,9 +99,7 @@ GROUP BY tq.query_text, tq.query_type
 HAVING COUNT(er.id) = 0
 ORDER BY tq.query_type, tq.query_text;
 
-SELECT '';
-SELECT '=== NOTES FROM EVALUATIONS ===' as section;
-SELECT '';
+SELECT '=== NOTES FROM EVALUATIONS ===' as section
 
 SELECT
     er.query_text,

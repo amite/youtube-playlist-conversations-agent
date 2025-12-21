@@ -6,7 +6,6 @@
 .mode column
 
 SELECT '=== MOST RECENT VIDEOS ===' as section;
-SELECT '';
 
 SELECT
     title,
@@ -20,9 +19,7 @@ WHERE published_at IS NOT NULL
 ORDER BY published_at DESC
 LIMIT 30;
 
-SELECT '';
-SELECT '=== VIDEOS FROM LAST 30 DAYS ===' as section;
-SELECT '';
+SELECT '=== VIDEOS FROM LAST 30 DAYS ===' as section
 
 SELECT
     COUNT(*) as recent_video_count,
@@ -33,9 +30,7 @@ FROM videos
 WHERE published_at IS NOT NULL
     AND published_at > strftime('%s', 'now', '-30 days');
 
-SELECT '';
-SELECT '=== VIDEOS FROM LAST 90 DAYS ===' as section;
-SELECT '';
+SELECT '=== VIDEOS FROM LAST 90 DAYS ===' as section
 
 SELECT
     COUNT(*) as recent_video_count,
@@ -45,9 +40,7 @@ FROM videos
 WHERE published_at IS NOT NULL
     AND published_at > strftime('%s', 'now', '-90 days');
 
-SELECT '';
-SELECT '=== VIDEOS FROM LAST 1 YEAR ===' as section;
-SELECT '';
+SELECT '=== VIDEOS FROM LAST 1 YEAR ===' as section
 
 SELECT
     COUNT(*) as recent_video_count,
@@ -57,9 +50,7 @@ FROM videos
 WHERE published_at IS NOT NULL
     AND published_at > strftime('%s', 'now', '-1 year');
 
-SELECT '';
-SELECT '=== PUBLICATION TRENDS (by year) ===' as section;
-SELECT '';
+SELECT '=== PUBLICATION TRENDS (by year) ===' as section
 
 SELECT
     strftime('%Y', datetime(published_at, 'unixepoch')) as year,
@@ -73,9 +64,7 @@ WHERE published_at IS NOT NULL
 GROUP BY year
 ORDER BY year DESC;
 
-SELECT '';
-SELECT '=== PUBLICATION TRENDS (by month, last 24 months) ===' as section;
-SELECT '';
+SELECT '=== PUBLICATION TRENDS (by month, last 24 months) ===' as section
 
 SELECT
     strftime('%Y-%m', datetime(published_at, 'unixepoch')) as year_month,
@@ -87,9 +76,7 @@ WHERE published_at IS NOT NULL
 GROUP BY year_month
 ORDER BY year_month DESC;
 
-SELECT '';
-SELECT '=== MOST VIEWED VIDEOS IN LAST YEAR ===' as section;
-SELECT '';
+SELECT '=== MOST VIEWED VIDEOS IN LAST YEAR ===' as section
 
 SELECT
     title,
@@ -103,9 +90,7 @@ WHERE published_at IS NOT NULL
 ORDER BY view_count DESC
 LIMIT 20;
 
-SELECT '';
-SELECT '=== OLDEST VIDEOS IN DATABASE ===' as section;
-SELECT '';
+SELECT '=== OLDEST VIDEOS IN DATABASE ===' as section
 
 SELECT
     title,
@@ -118,9 +103,7 @@ WHERE published_at IS NOT NULL
 ORDER BY published_at ASC
 LIMIT 20;
 
-SELECT '';
-SELECT '=== VIEW GROWTH PATTERNS ===' as section;
-SELECT '';
+SELECT '=== VIEW GROWTH PATTERNS ===' as section
 
 WITH decade_views AS (
     SELECT

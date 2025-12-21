@@ -9,6 +9,22 @@
 
 ---
 
+## Why keywords matter
+
+The 50 keywords tracked represent the **technical vocabulary** that defines our dataset. These terms are critical for:
+
+1. **Semantic Search Accuracy** - They're the words users would search for
+2. **Content Validation** - They verify our cleaning process preserves meaning
+3. **Future Feature Development** - They help identify gaps in our current approach
+
+**Keywords are used for:**
+
+**Inclusion**: Keeps only records containing the keywords (e.g., isolating all feedback related to "battery life").
+
+**Exclusion/Removal**: Drops records containing unwanted terms, such as profanity, spam, or bot-generated content.
+
+**Categorization**: Assigns new labels to data points based on keyword matches (e.g., labeling any record with "Shirt" or "Pants" as "Apparel")
+
 ## Executive Summary
 
 During Phase 0.2.5 semantic loss analysis, we tracked **50 technical keywords** to validate that our semantic cleaning process preserved important terminology in YouTube video descriptions. This document explains how and why these specific keywords were selected.
@@ -17,6 +33,28 @@ During Phase 0.2.5 semantic loss analysis, we tracked **50 technical keywords** 
 - ✅ **91.7% average keyword preservation** (target: >90%)
 - ✅ **42/50 keywords preserved at 100%**
 - ✅ **0/50 keywords fell below 90% preservation threshold**
+
+here are the 50 keywords we tracked:
+
+```py
+technical_keywords = [
+    # AI/ML
+    'AI', 'ML', 'LLM', 'GPT', 'RAG', 'embedding', 'model', 'neural', 
+    'deep learning', 'machine learning', 'NLP', 'computer vision', 
+    'transformer', 'attention',
+    # Programming languages & frameworks
+    'Python', 'JavaScript', 'TypeScript', 'React', 'Django', 'Flask', 
+    'Node', 'Express', 'API', 'REST', 'GraphQL', 'SQL',
+    # Databases & Infrastructure
+    'PostgreSQL', 'MongoDB', 'Redis', 'Docker', 'Kubernetes', 
+    'AWS', 'GCP', 'Azure',
+    # DevOps & Tools
+    'CI/CD', 'deployment', 'containerization', 'microservices', 
+    'Git', 'GitHub', 'VS Code', 'CLI',
+    # Concepts
+    'tutorial', 'guide', 'documentation', 'architecture', 'pattern', 
+    'optimization', 'performance', 'security'
+]
 
 ---
 
