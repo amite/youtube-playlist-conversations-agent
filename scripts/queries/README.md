@@ -24,7 +24,25 @@ sqlite3 -header -column data/videos.db < scripts/queries/overview.sql > stats_re
 
 ### Core Analysis Queries
 
-#### 1. **overview.sql** - Database Overview
+#### 1. **new_video_tracking.sql** - New Video Tracking
+Track videos added since specific timestamps to identify fresh content.
+
+**Output includes:**
+- Videos added since specific timestamps
+- Count of new videos
+- Recent additions (last 24 hours, 7 days)
+
+**Usage:**
+```bash
+sqlite3 -header -column data/videos.db < scripts/queries/new_video_tracking.sql
+
+# To track videos added since a specific date:
+sqlite3 -header -column data/videos.db < scripts/queries/new_video_tracking.sql > new_videos.txt
+```
+
+---
+
+#### 2. **overview.sql** - Database Overview
 Quick snapshot of database status and key metrics.
 
 **Output includes:**
@@ -40,7 +58,7 @@ sqlite3 -header -column data/videos.db < scripts/queries/overview.sql
 
 ---
 
-#### 2. **channels.sql** - Channel Analysis
+#### 2. **overview.sql** - Database Overview
 Video distribution and performance metrics by channel.
 
 **Output includes:**
@@ -56,7 +74,7 @@ sqlite3 -header -column data/videos.db < scripts/queries/channels.sql | head -50
 
 ---
 
-#### 3. **content_stats.sql** - Content Statistics
+#### 3. **channels.sql** - Channel Analysis
 Video length distribution, popularity tiers, and engagement patterns.
 
 **Output includes:**
@@ -73,7 +91,7 @@ sqlite3 -header -column data/videos.db < scripts/queries/content_stats.sql
 
 ---
 
-#### 4. **embedding_progress.sql** - Embedding Progress
+#### 4. **content_stats.sql** - Content Statistics
 Monitor embedding generation and API usage.
 
 **Output includes:**
@@ -95,7 +113,7 @@ sqlite3 -header -column data/videos.db < scripts/queries/embedding_progress.sql
 
 ---
 
-#### 5. **evaluation_summary.sql** - Search Quality Metrics
+#### 5. **embedding_progress.sql** - Embedding Progress
 Track manual evaluation results and search quality.
 
 **Output includes:**
@@ -115,7 +133,7 @@ sqlite3 -header -column data/videos.db < scripts/queries/evaluation_summary.sql
 
 ---
 
-#### 6. **data_quality.sql** - Data Quality Checks
+#### 6. **evaluation_summary.sql** - Search Quality Metrics
 Identify data integrity issues and completeness.
 
 **Output includes:**
@@ -133,7 +151,7 @@ sqlite3 -header -column data/videos.db < scripts/queries/data_quality.sql
 
 ---
 
-#### 7. **trending_analysis.sql** - Temporal Analysis
+#### 7. **data_quality.sql** - Data Quality Checks
 Publication trends and view patterns over time.
 
 **Output includes:**
@@ -151,7 +169,7 @@ sqlite3 -header -column data/videos.db < scripts/queries/trending_analysis.sql
 
 ---
 
-#### 8. **search_testing.sql** - Test Query Suite Status
+#### 8. **trending_analysis.sql** - Temporal Analysis
 Monitor the status of test queries and evaluations.
 
 **Output includes:**
@@ -170,9 +188,7 @@ sqlite3 -header -column data/videos.db < scripts/queries/search_testing.sql
 
 ---
 
-### Extended Analysis Queries
-
-#### 9. **cost_analysis.sql** - API Cost Tracking
+#### 9. **search_testing.sql** - Test Query Suite Status
 Detailed cost analysis and projections for embedding API usage.
 
 **Output includes:**
@@ -200,7 +216,9 @@ sqlite3 -header -column data/videos.db < scripts/queries/cost_analysis.sql > cos
 
 ---
 
-#### 10. **comparison_queries.sql** - Before/After Comparisons
+### Extended Analysis Queries
+
+#### 10. **cost_analysis.sql** - API Cost Tracking
 Compare search quality metrics across algorithm changes (A/B testing).
 
 **Output includes:**
@@ -230,7 +248,7 @@ sqlite3 -header -column data/videos.db < scripts/queries/comparison_queries.sql
 
 ---
 
-#### 11. **export_reports.sql** - CSV and Markdown Exports
+#### 11. **comparison_queries.sql** - Before/After Comparisons
 Generate formatted reports for spreadsheets and documentation.
 
 **Output includes:**
@@ -253,6 +271,66 @@ sqlite3 data/videos.db < scripts/queries/export_reports.sql | grep -A 20 "SCOREC
 
 # Save all reports to files
 sqlite3 data/videos.db < scripts/queries/export_reports.sql > all_reports.txt
+```
+
+---
+
+## New Video Tracking Queries
+
+### Finding Recently Added Videos
+
+To identify videos added since a specific timestamp:
+
+```sql
+-- Find videos added since a specific timestamp
+SELECT
+    video_id,
+    title,
+    channel_name,
+    created_at,
+    published_at
+FROM videos
+WHERE created_at > '2025-12-20 07:17:09'
+ORDER BY created_at DESC;
+
+-- Find videos added in the last 24 hours
+SELECT
+    video_id,
+    title,
+    channel_name,
+    created_at
+FROM videos
+WHERE created_at > datetime('now', '-24 hours')
+ORDER BY created_at DESC;
+
+-- Count new videos since a timestamp
+SELECT COUNT(*) as new_videos_count
+FROM videos
+WHERE created_at > '2025-12-20 07:17:09';
+```
+
+**Usage:**
+```bash
+# Find videos added since last checkpoint
+sqlite3 -header -column data/videos.db < scripts/queries/new_video_tracking.sql
+
+# Save new videos to file
+sqlite3 -header -column data/videos.db < scripts/queries/new_video_tracking.sql > new_videos.txt
+```
+
+### Python Script for Tracking
+
+For automated tracking, use the provided Python script:
+
+```bash
+# Create baseline checkpoint
+python scripts/find_new_videos.py
+
+# Check for new videos since a timestamp
+python scripts/find_new_videos.py --since "2025-12-20 07:17:09"
+
+# Save results to file
+python scripts/find_new_videos.py --since "2025-12-20 07:17:09" --output new_videos.txt
 ```
 
 ---

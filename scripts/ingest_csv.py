@@ -50,6 +50,7 @@ def ingest_csv(csv_path: Path, db_path: Path) -> dict:
         "inserted": 0,
         "duplicates_skipped": 0,
         "errors": 0,
+        "new_video_ids": [],
     }
 
     conn = sqlite3.connect(db_path)
@@ -117,6 +118,7 @@ def ingest_csv(csv_path: Path, db_path: Path) -> dict:
                     ),
                 )
                 stats["inserted"] += 1
+                stats["new_video_ids"].append(video_id)
                 existing_ids.add(video_id)
 
             except Exception as e:
@@ -154,6 +156,14 @@ def main():
     print(f"  Inserted: {stats['inserted']}")
     print(f"  Duplicates skipped: {stats['duplicates_skipped']}")
     print(f"  Errors: {stats['errors']}")
+    
+    if stats['new_video_ids']:
+        print(f"\n🆕 New video IDs added: {len(stats['new_video_ids'])}")
+        # Write new video IDs to a file for reference
+        new_ids_file = data_dir / "new_video_ids.txt"
+        with open(new_ids_file, "w") as f:
+            f.write("\n".join(stats['new_video_ids']))
+        print(f"  Saved to: {new_ids_file}")
 
     return 0
 
